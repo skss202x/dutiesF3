@@ -1,1 +1,149 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lower Sec Duties</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #e0f2f1, #ffe0b2);
+      color: #333;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    header {
+      background: linear-gradient(120deg, #ff9800, #ffcc80);
+      color: #fff;
+      padding: 2rem 1rem;
+      text-align: center;
+      font-size: 2.8rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 200%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
+      animation: shimmer 5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #ffffffcc;
+      border-radius: 12px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 1rem;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      vertical-align: top;
+      transition: background-color 0.3s ease;
+    }
+
+    tr:hover td {
+      background-color: #fff3e0;
+    }
+
+    th {
+      background-color: #ffb74d;
+      color: white;
+    }
+
+    td ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        font-size: 2rem;
+        padding: 1.2rem;
+      }
+      th, td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      tr {
+        margin-bottom: 1rem;
+        display: block;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    🌍 Lower Sec Duties 🌟
+  </header>
+  <div class="container">
+    <table id="duties-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Duties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="2">Loading data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    async function fetchSheetData() {
+      const sheetUrl = 'https://opensheet.elk.sh/1l-uBoIU_TwMTkPOO0NOzkCm1wRxWLJlu_hNEu_Az2FY/LOWER%20SEC%20APR';
+      const tableBody = document.querySelector('#duties-table tbody');
+      try {
+        const res = await fetch(sheetUrl);
+        const data = await res.json();
+        tableBody.innerHTML = '';
+        data.forEach(row => {
+          const duties = [row.Duty1, row.Duty2, row.Duty3].filter(Boolean);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.Name}</td>
+            <td><ul>${duties.map(d => `<li>${d}</li>`).join('')}</ul></td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      } catch (e) {
+        tableBody.innerHTML = '<tr><td colspan="2">Failed to load data.</td></tr>';
+      }
+    }
+    fetchSheetData();
+  </script>
+</body>
+</html>
+
