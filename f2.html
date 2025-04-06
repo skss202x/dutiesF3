@@ -49,12 +49,15 @@
       background-color: #ffffffcc;
       border-radius: 12px;
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
+      word-wrap: break-word;
+      table-layout: fixed;
     }
 
     th, td {
@@ -77,6 +80,11 @@
     td ul {
       margin: 0;
       padding-left: 1.2rem;
+    }
+
+    td ul li {
+      word-break: break-word;
+      line-height: 1.5;
     }
 
     @keyframes fadeIn {
@@ -133,7 +141,7 @@
           const duties = [row.Duty1, row.Duty2, row.Duty3].filter(Boolean);
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${row.Name}</td>
+            <td>${row.Name || 'Unnamed'}</td>
             <td><ul>${duties.map(d => `<li>${d}</li>`).join('')}</ul></td>
           `;
           tableBody.appendChild(tr);
@@ -146,4 +154,3 @@
   </script>
 </body>
 </html>
-
