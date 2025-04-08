@@ -17,26 +17,38 @@
     // If you'd like to parse strictly by row index, we can switch to an array-of-arrays approach.
     const sheetUrl = "https://opensheet.vercel.app/2PACX-1vQSM-lJx6SGgWefGw9s51MEALdSlpwnaUF9QrvvCiDLWTAH5YZKldb9_dFlgZ9yVmKk0yYKkY2QmBMS/ONSITE%20-%20CAFETERIA%20(A)";
 
+    // We suspect the user encountered 'Error fetching sheet:' which might indicate
+    // the doc isn't published, or the link is invalid. We'll add checks for res.ok
+    // and provide test cases.
+
+    // TEST CASES:
+    // 1) If the sheet is accessible: We expect the code to load, find 'Tan' if it exists, and display results.
+    // 2) If the sheet URL is invalid or not published: We expect an error message to appear in the console and fallback on-screen.
+    // 3) If the sheet is empty: We expect no cards to display, but no crash.
+
     async function fetchTanData() {
       try {
         const res = await fetch(sheetUrl);
+        if (!res.ok) {
+          // The sheet might be missing or not publicly published.
+          throw new Error(`Failed to load sheet. HTTP status ${res.status}`);
+        }
+
         const rows = await res.json();
+        if (!Array.isArray(rows) || rows.length === 0) {
+          console.warn("Sheet is empty or not returned as an array.");
+        }
 
         // We'll do a simple search:
         // 1) Find the row(s) that contain 'Tan' in *any* column.
-        // 2) From that row, we'll display 'Tan' plus the 3 cells to the left.
-        // NOTE: Because we're using an array of objects (with column names), "left" is not as direct.
-        // If you want actual left columns, we'd need an array-of-arrays approach or known column names.
-
-        // For demonstration, let's do:
-        //   1) Find the key that contains 'Tan'
-        //   2) Then show 3 other columns from the same row
-        // We'll guess column headers. You can rename them if needed.
+        // 2) Then show that row. If the user wants EXACT 3-cells-to-the-left logic,
+        //    we can clarify or use an array-of-arrays approach.
 
         const cardsDiv = document.getElementById('cards');
+
+        // Ask the user: "What is the expected behavior if multiple rows have 'Tan'?" For now, we'll display them all.
+
         rows.forEach((rowObj) => {
-          // rowObj is an object like: { "NAME": "Tan", "ColA": "xyz", ... }
-          // We'll see if any property includes "Tan".
           let foundTan = false;
           let foundKey = "";
           for (const key in rowObj) {
@@ -47,10 +59,7 @@
             }
           }
 
-          if (!foundTan) return; // skip if Tan not found.
-
-          // We'll collect up to 3 columns to the left. Because we only have named columns,
-          // let's just display everything in that row for demonstration.
+          if (!foundTan) return; // skip if Tan not found
 
           const dataStrings = Object.entries(rowObj)
             .map(([k, v]) => `${k}: ${v}`)
@@ -67,8 +76,17 @@
         });
       } catch (err) {
         console.error("Error fetching sheet:", err);
+        // Provide a friendly message on-screen for the user.
+        const cardsDiv = document.getElementById('cards');
+        const errorEl = document.createElement('div');
+        errorEl.className = "bg-red-100 text-red-700 p-4 rounded";
+        errorEl.textContent = "Failed to load data. Please check if the sheet is published and the URL is correct.";
+        cardsDiv.appendChild(errorEl);
       }
     }
+
+    // Always ask the user what the exact expected behavior is if there's ambiguity.
+    // For instance, do we want partial or exact matches for 'Tan'? Are there columns we should ignore?
 
     fetchTanData();
   </script>
