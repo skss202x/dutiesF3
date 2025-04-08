@@ -102,10 +102,7 @@
           const card = document.createElement('div');
           card.className = 'card rounded-2xl p-4 shadow-lg';
           card.innerHTML = `
-            <h2 class="text-xl font-bold mb-2 geo-earth-agate text-center">${name}</h2>
-            <ul class="list-disc list-inside text-orange-100 text-base">
-              ${allDuties.map(d => `<li>${d}</li>`).join('')}
-            </ul>
+            <p class="text-orange-100 text-base text-center"><span class="font-bold geo-earth-agate">${name}</span>: ${allDuties.join(', ')}</p>
           `;
           container.appendChild(card);
         });
