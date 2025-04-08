@@ -35,9 +35,10 @@
 <body class="text-white">
 
   <div class="min-h-screen bg-black/60 p-8">
-    <h1 class="text-4xl font-bold text-center mb-10 geo-earth-agate animate-pulse">
+    <h1 class="text-4xl font-bold text-center mb-2 geo-earth-agate animate-pulse">
       🏅 Prefect Duties Dashboard
     </h1>
+    <h2 id="week-date" class="text-center text-orange-200 text-lg italic mb-10"></h2>
     <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
@@ -50,13 +51,19 @@
         const res = await fetch(url);
         const data = await res.json();
 
+        // Display the date from the first row's "Week Date" field
+        const weekDate = data[0]["Week Date"] || "";
+        if (weekDate) {
+          document.getElementById('week-date').textContent = `Week: ${weekDate}`;
+        }
+
         const container = document.getElementById('duties');
-        data.forEach(row => {
+        data.slice(1).forEach(row => {
           const name = row["Prefect Name"] || "Unnamed Prefect";
           const mainDuty = row["Duty"] || "-";
 
           const extraDuties = Object.keys(row)
-            .filter(key => key !== "Prefect Name" && key !== "Duty" && key !== "" && key !== undefined)
+            .filter(key => key !== "Prefect Name" && key !== "Duty" && key !== "" && key !== undefined && key !== "Week Date")
             .map(key => row[key])
             .filter(d => d && d.trim() !== "-");
 
