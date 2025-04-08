@@ -25,7 +25,8 @@
 <body class="text-white">
 
   <div class="min-h-screen p-8">
-    <h1 class="text-4xl font-bold text-center mb-10">🏅 Prefect Duties Dashboard</h1>
+    <h1 class="text-4xl font-bold text-center mb-4">🏅 Prefect Duties Dashboard</h1>
+    <pre id="debug" class="bg-black text-green-400 p-4 mb-8 text-sm overflow-x-auto"></pre>
     <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
@@ -33,7 +34,9 @@
     const publicSpreadsheetURL = 'https://docs.google.com/spreadsheets/d/11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE/pubhtml';
 
     function showInfo(data) {
-      console.log("Fetched data from Tabletop:", data);
+      const debug = document.getElementById('debug');
+      debug.textContent = JSON.stringify(data, null, 2); // Show fetched data
+
       const container = document.getElementById('duties');
       data.forEach(row => {
         const card = document.createElement('div');
