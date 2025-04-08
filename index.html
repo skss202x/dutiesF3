@@ -24,7 +24,6 @@
 
   <div class="min-h-screen p-8">
     <h1 class="text-4xl font-bold text-center mb-4">🏅 Prefect Duties Dashboard</h1>
-    <pre id="debug" class="bg-black text-green-400 p-4 mb-8 text-sm overflow-x-auto"></pre>
     <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
@@ -36,8 +35,6 @@
       try {
         const res = await fetch(url);
         const data = await res.json();
-
-        document.getElementById('debug').textContent = JSON.stringify(data, null, 2);
 
         const container = document.getElementById('duties');
         data.forEach(row => {
@@ -52,6 +49,9 @@
 
           const allDuties = [mainDuty, ...extraDuties].filter(d => d && d.trim() !== "-");
 
+          // Only render if there are actual duties
+          if (allDuties.length === 0) return;
+
           const card = document.createElement('div');
           card.className = 'card bg-slate-800 rounded-2xl p-6 shadow-md';
           card.innerHTML = `
@@ -63,8 +63,7 @@
           container.appendChild(card);
         });
       } catch (err) {
-        document.getElementById('debug').textContent = 'Failed to load data.';
-        console.error(err);
+        console.error('Failed to load data:', err);
       }
     }
 
