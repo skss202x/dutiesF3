@@ -2,19 +2,17 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Search Google Sheet + 3 Cells to the Left</title>
-  <!-- Tailwind (For quick styling). For production, consider bundling locally -->
+  <title>Search Google Sheets</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-  <h1 class="text-2xl font-bold mb-4">Search & Display + 3 Cells Left</h1>
+  <h1 class="text-2xl font-bold mb-4">Search Google Sheets by Term</h1>
 
-  <!-- Search box -->
   <div class="mb-4 flex gap-2">
     <input
       id="searchInput"
       type="text"
-      placeholder="Enter your search term..."
+      placeholder="Enter search term..."
       class="border border-gray-300 rounded px-2 py-1 focus:outline-none"
     />
     <button
@@ -23,141 +21,79 @@
     >Search</button>
   </div>
 
-  <div id="results" class="w-full max-w-xl flex flex-col gap-4"></div>
+  <div id="results" class="w-full max-w-4xl flex flex-col gap-4"></div>
 
   <script>
-    // ===============================
-    // Step 1: Configure your sheet info
-    // ===============================
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
-    // Update the range if your tab is named something else:
-    const range = "ONSITE - CAFETERIA (A)!A1:J1000";
+    const sheetConfigs = [
+      { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3 },
+      { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3 },
+      { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5 },
+      { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5 },
+    ];
 
-    // The Google Sheets API endpoint for array-of-arrays:
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
-
-    let cachedRows = [];
-
-    // ===============================
-    // Step 2: Fetch and parse
-    // ===============================
-    async function fetchSheetData() {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
-        const rows = data.values; // <--- array of arrays
-        if (!rows || !Array.isArray(rows)) {
-          throw new Error("Sheet data not returned as an array of arrays.");
-        }
-        if (rows.length === 0) {
-          console.warn("No rows found in this sheet/range.");
-        }
-
-        // We'll store rows so we can re-filter them.
-        // We'll skip the first row if it's headers.
-        cachedRows = rows.slice(1);
-
-      } catch (err) {
-        console.error("Error fetching sheet data:", err);
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = `
-          <div class="bg-red-100 text-red-700 p-4 rounded">
-            Failed to load data: ${err.message}
-          </div>
-        `;
-      }
+    async function fetchSheet(sheetName, range) {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
+      const json = await res.json();
+      return json.values?.slice(1) || [];
     }
 
-    // ===============================
-    // Step 3: Find searchTerm + show 3 left cells
-    // ===============================
-    function displayMatches(searchTerm) {
+    function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm) {
+      const card = document.createElement("div");
+      card.className = "bg-white p-4 rounded shadow border-l-8 border-blue-500";
+
+      const leftItems = leftCells
+        .reverse()
+        .map((val, i) => `<li><span class='font-semibold'>Cell ${colIndex - (i + 1)}</span>: ${val}</li>`)
+        .join("");
+
+      card.innerHTML = `
+        <h2 class="text-lg font-bold mb-1 text-blue-700">${sheetName}</h2>
+        <p class="text-sm"><strong>Found:</strong> "${searchTerm}" in row ${rowIndex + 2}, column ${colIndex + 1}</p>
+        <p class="text-sm"><strong>Cell Value:</strong> ${match}</p>
+        <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
+          <li><strong>${leftCells.length} cells to the left:</strong></li>
+          ${leftItems || "<li><em>None found</em></li>"}
+        </ul>
+      `;
+
+      return card;
+    }
+
+    document.getElementById("searchBtn").addEventListener("click", async () => {
+      const term = document.getElementById("searchInput").value.trim();
       const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = ""; // clear old results
+      resultsDiv.innerHTML = "";
 
-      // For each row, we check each cell for the searchTerm
-      cachedRows.forEach((row, rowIndex) => {
-        if (!row) return;
+      if (!term) {
+        resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-4 rounded">Please enter a search term.</div>`;
+        return;
+      }
 
-        for (let col = 0; col < row.length; col++) {
-          const cellValue = row[col] || "";
-
-          // Check if the cell includes the search term
-          if (cellValue.includes(searchTerm)) {
-            // Grab up to 3 cells to the left
-            const leftCells = [];
-            for (let offset = 1; offset <= 3; offset++) {
-              const leftCol = col - offset;
-              if (leftCol >= 0) {
-                leftCells.push(row[leftCol]);
+      for (const { name, range, left } of sheetConfigs) {
+        try {
+          const rows = await fetchSheet(name, range);
+          rows.forEach((row, rowIndex) => {
+            row?.forEach((cell, colIndex) => {
+              if (cell?.includes(term)) {
+                const leftData = [];
+                for (let i = 1; i <= left; i++) {
+                  if (colIndex - i >= 0) leftData.push(row[colIndex - i]);
+                }
+                const card = createCard(name, cell, leftData, rowIndex, colIndex, term);
+                resultsDiv.appendChild(card);
               }
-            }
-
-            // Create a card for the match
-            const card = document.createElement("div");
-            card.className = "bg-white p-4 rounded shadow";
-
-            // Show each left cell
-            const leftCellsStr = leftCells
-              .reverse() // prints from leftmost to rightmost
-              .map((val, i) => `<li>Cell ${col - (i + 1)}: ${val}</li>`)
-              .join("");
-
-            card.innerHTML = `
-              <h2 class="text-lg font-bold mb-2">
-                Found "${searchTerm}" in Row ${rowIndex + 2}, Column ${col + 1}
-              </h2>
-              <p class="text-sm">
-                <strong>Cell Value:</strong> ${cellValue}
-              </p>
-              <ul class="pl-4 list-disc mt-2">
-                <li><strong>3 cells to the left</strong> (if exist):</li>
-                ${leftCellsStr || "<li>None (out of bounds)</li>"}
-              </ul>
-            `;
-            resultsDiv.appendChild(card);
-          }
+            });
+          });
+        } catch (err) {
+          console.error(err);
+          resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-4 rounded">Error loading ${name}</div>`;
         }
-      });
-    }
-
-    // ===============================
-    // Search button logic
-    // ===============================
-    document.getElementById("searchBtn").addEventListener("click", () => {
-      const inputVal = document.getElementById("searchInput").value.trim();
-      if (!cachedRows || cachedRows.length === 0) {
-        // Possibly not loaded yet or no data
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = `
-          <div class="bg-yellow-100 text-yellow-700 p-4 rounded">
-            The sheet hasn't loaded or is empty. Please try again.
-          </div>
-        `;
-        return;
       }
-      if (!inputVal) {
-        // If empty, let's clear the results or show a message
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = `
-          <div class="bg-yellow-100 text-yellow-700 p-4 rounded">
-            Please enter a search term.
-          </div>
-        `;
-        return;
-      }
-
-      displayMatches(inputVal);
     });
-
-    // ===============================
-    // Let's go
-    // ===============================
-    fetchSheetData();
   </script>
 </body>
 </html>
