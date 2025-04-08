@@ -2,155 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lower Sec Duties</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      background: linear-gradient(to right, #e0f2f1, #ffe0b2);
-      color: #333;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    header {
-      background: linear-gradient(120deg, #ff9800, #ffcc80);
-      color: #fff;
-      padding: 2rem 1rem;
-      text-align: center;
-      font-size: 2.8rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -50%;
-      width: 200%;
-      height: 100%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2), transparent 70%);
-      animation: shimmer 5s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      50% { transform: translateX(100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background-color: #ffffffcc;
-      border-radius: 12px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      word-wrap: break-word;
-      table-layout: fixed;
-    }
-
-    th, td {
-      padding: 1rem;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      vertical-align: top;
-      transition: background-color 0.3s ease;
-    }
-
-    tr:hover td {
-      background-color: #fff3e0;
-    }
-
-    th {
-      background-color: #ffb74d;
-      color: white;
-    }
-
-    td ul {
-      margin: 0;
-      padding-left: 1.2rem;
-    }
-
-    td ul li {
-      word-break: break-word;
-      line-height: 1.5;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @media (max-width: 600px) {
-      header {
-        font-size: 2rem;
-        padding: 1.2rem;
-      }
-      th, td {
-        display: block;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      tr {
-        margin-bottom: 1rem;
-        display: block;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        overflow: hidden;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tan's Data Page</title>
+  <!-- ✅ TAILWIND FOR QUICK STYLING -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    🌍 Lower Sec Duties 🌟
-  </header>
-  <div class="container">
-    <table id="duties-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Duties</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td colspan="2">Loading data...</td></tr>
-      </tbody>
-    </table>
-  </div>
+<body class="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-4">
+  <h1 class="text-2xl font-bold mb-4">ON-SITE - CAFETERIA (A) Data</h1>
+  <div id="cards" class="flex flex-col gap-4 w-full max-w-md"></div>
+
   <script>
-    async function fetchSheetData() {
-      const sheetUrl = 'https://opensheet.elk.sh/11D7pi7VrT9kqLYJTrTluKpjKGAhe3kukjQkQtgRveTc/LOWER%20SEC%20APR';
-      const tableBody = document.querySelector('#duties-table tbody');
+    // We'll fetch data from your published Google Sheet.
+    // This link pulls the entire sheet as an array of objects.
+    // If you'd like to parse strictly by row index, we can switch to an array-of-arrays approach.
+    const sheetUrl = "https://opensheet.vercel.app/2PACX-1vQSM-lJx6SGgWefGw9s51MEALdSlpwnaUF9QrvvCiDLWTAH5YZKldb9_dFlgZ9yVmKk0yYKkY2QmBMS/ONSITE%20-%20CAFETERIA%20(A)";
+
+    async function fetchTanData() {
       try {
         const res = await fetch(sheetUrl);
-        const data = await res.json();
-        tableBody.innerHTML = '';
-        data.forEach(row => {
-          const duties = [row.Duty1, row.Duty2, row.Duty3].filter(Boolean);
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${row.Name || 'Unnamed'}</td>
-            <td><ul>${duties.map(d => `<li>${d}</li>`).join('')}</ul></td>
+        const rows = await res.json();
+
+        // We'll do a simple search:
+        // 1) Find the row(s) that contain 'Tan' in *any* column.
+        // 2) From that row, we'll display 'Tan' plus the 3 cells to the left.
+        // NOTE: Because we're using an array of objects (with column names), "left" is not as direct.
+        // If you want actual left columns, we'd need an array-of-arrays approach or known column names.
+
+        // For demonstration, let's do:
+        //   1) Find the key that contains 'Tan'
+        //   2) Then show 3 other columns from the same row
+        // We'll guess column headers. You can rename them if needed.
+
+        const cardsDiv = document.getElementById('cards');
+        rows.forEach((rowObj) => {
+          // rowObj is an object like: { "NAME": "Tan", "ColA": "xyz", ... }
+          // We'll see if any property includes "Tan".
+          let foundTan = false;
+          let foundKey = "";
+          for (const key in rowObj) {
+            if (rowObj[key] && rowObj[key].toString().includes("Tan")) {
+              foundTan = true;
+              foundKey = key;
+              break;
+            }
+          }
+
+          if (!foundTan) return; // skip if Tan not found.
+
+          // We'll collect up to 3 columns to the left. Because we only have named columns,
+          // let's just display everything in that row for demonstration.
+
+          const dataStrings = Object.entries(rowObj)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("<br>");
+
+          // Create a simple card
+          const card = document.createElement('div');
+          card.className = "bg-white p-4 rounded shadow";
+          card.innerHTML = `
+            <h2 class="text-lg font-bold mb-2">Found 'Tan' in column: ${foundKey}</h2>
+            <p class="text-sm">${dataStrings}</p>
           `;
-          tableBody.appendChild(tr);
+          cardsDiv.appendChild(card);
         });
-      } catch (e) {
-        tableBody.innerHTML = '<tr><td colspan="2">Failed to load data.</td></tr>';
+      } catch (err) {
+        console.error("Error fetching sheet:", err);
       }
     }
-    fetchSheetData();
+
+    fetchTanData();
   </script>
 </body>
 </html>
