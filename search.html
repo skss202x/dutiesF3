@@ -2,17 +2,17 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Search Google Sheets</title>
+  <title>Prefects Duties Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-  <h1 class="text-2xl font-bold mb-4">Search Google Sheets by Term</h1>
+  <h1 class="text-2xl font-bold mb-4">Prefect Duties Dashboard</h1>
 
   <div class="mb-4 flex gap-2">
     <input
       id="searchInput"
       type="text"
-      placeholder="Enter search term..."
+      placeholder="Your name..."
       class="border border-gray-300 rounded px-2 py-1 focus:outline-none"
     />
     <button
@@ -52,8 +52,8 @@
 
       card.innerHTML = `
         <h2 class="text-lg font-bold mb-1 text-blue-700">${sheetName}</h2>
-        <p class="text-sm"><strong>Found:</strong> "${searchTerm}" in row ${rowIndex + 2}, column ${colIndex + 1}</p>
-        <p class="text-sm"><strong>Cell Value:</strong> ${match}</p>
+        <p class="text-sm"><strong>Found in:</strong> "${searchTerm}" in row ${rowIndex + 2}, column ${colIndex + 1}</p>
+        <p class="text-sm"><strong>Name searched:</strong> ${match}</p>
         <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
           <li><strong>${leftCells.length} cells to the left:</strong></li>
           ${leftItems || "<li><em>None found</em></li>"}
