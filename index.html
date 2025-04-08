@@ -6,8 +6,6 @@
   <title>Prefect Duties</title>
   <!-- ✅ TAILWIND FOR DEVELOPMENT -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- ✅ FIXED TABLETOP CDN -->
-  <script src="https://cdn.jsdelivr.net/gh/jsoma/tabletop@1.5.1/src/tabletop.min.js"></script>
   <style>
     body {
       background: #0f172a;
@@ -31,31 +29,33 @@
   </div>
 
   <script>
-    const publicSpreadsheetURL = 'https://docs.google.com/spreadsheets/d/11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE/pubhtml';
+    const sheetId = '11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE';
+    const url = `https://opensheet.vercel.app/${sheetId}/Sheet1`;
 
-    function showInfo(data) {
-      const debug = document.getElementById('debug');
-      debug.textContent = JSON.stringify(data, null, 2); // Show fetched data
+    async function fetchSheetData() {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
 
-      const container = document.getElementById('duties');
-      data.forEach(row => {
-        const card = document.createElement('div');
-        card.className = 'card bg-slate-800 rounded-2xl p-6 shadow-md';
-        card.innerHTML = `
-          <h2 class="text-2xl font-semibold mb-2 text-sky-400">${row["Prefect Name"]}</h2>
-          <p class="text-base text-gray-300">${row["Duty"]}</p>
-        `;
-        container.appendChild(card);
-      });
+        document.getElementById('debug').textContent = JSON.stringify(data, null, 2);
+
+        const container = document.getElementById('duties');
+        data.forEach(row => {
+          const card = document.createElement('div');
+          card.className = 'card bg-slate-800 rounded-2xl p-6 shadow-md';
+          card.innerHTML = `
+            <h2 class="text-2xl font-semibold mb-2 text-sky-400">${row["Prefect Name"]}</h2>
+            <p class="text-base text-gray-300">${row["Duty"]}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        document.getElementById('debug').textContent = 'Failed to load data.';
+        console.error(err);
+      }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      Tabletop.init({
-        key: publicSpreadsheetURL,
-        callback: showInfo,
-        simpleSheet: true
-      });
-    });
+    window.addEventListener('DOMContentLoaded', fetchSheetData);
   </script>
 
 </body>
