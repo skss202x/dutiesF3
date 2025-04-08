@@ -73,7 +73,8 @@
 
         const container = document.getElementById('duties');
         data.forEach((row, index) => {
-          if (index === 0) return;
+          if (!row["Prefect Name"] && !row["Duty"]) return;
+
 
           const name = row["Prefect Name"] || "Unnamed Prefect";
           const mainDuty = row["Duty"] || "-";
