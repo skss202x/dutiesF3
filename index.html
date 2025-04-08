@@ -32,6 +32,19 @@
       font-weight: 900;
       text-shadow: 0 2px 10px rgba(0,0,0,0.8);
     }
+    .shiny-subtitle {
+      background: linear-gradient(to right, #000000, #222222);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+      font-size: 1.75rem;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 1; }
+    }
   </style>
 </head>
 <body class="text-white">
@@ -40,7 +53,7 @@
     <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
       Seb's F3 Prefect Duties Dashboard
     </h1>
-    <h2 id="week-date" class="text-center text-orange-200 text-xl sm:text-2xl italic mb-10"></h2>
+    <h2 id="week-date" class="text-center shiny-subtitle mb-10"></h2>
     <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"></div>
   </div>
 
