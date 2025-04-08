@@ -1,104 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tan's Data Page</title>
-  <!-- ✅ TAILWIND FOR QUICK STYLING -->
+  <meta charset="utf-8" />
+  <title>Find Tan (Plus 3 Cells to the Left)</title>
+  <!-- Tailwind (For quick styling). For production, consider bundling locally -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-4">
-  <h1 class="text-2xl font-bold mb-4">ON-SITE - CAFETERIA (A) Data</h1>
-  <div id="cards" class="flex flex-col gap-4 w-full max-w-md"></div>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+  <h1 class="text-2xl font-bold mb-4">Find "Tan" + 3 Cells to the Left</h1>
+  <div id="results" class="w-full max-w-xl flex flex-col gap-4"></div>
 
   <script>
-    // We'll fetch data from your published Google Sheet.
-    // This link pulls the entire sheet as an array of objects.
-    // If you'd like to parse strictly by row index, we can switch to an array-of-arrays approach.
-    //
-    // Currently, it references a 2PACX link, which typically won't work with opensheet.vercel.app
-    // unless it's recognized as a standard doc ID. We suspect that's causing the 400 error.
+    // ===============================
+    // Step 1: Configure your sheet info
+    // ===============================
+    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c"; 
+    const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
+    // Update the range if your tab is named something else:
+    const range = "ONSITE - CAFETERIA (A)!A1:J1000"; 
+    // e.g. "ONSITE - CAFETERIA (A)!A1:Z1000" if that’s your sheet tab name.
 
-    // TEST CASES:
-    // 1) If the sheet is accessible with a valid ID: The code loads, finds 'Tan' if it exists, and displays results.
-    // 2) If the sheet URL is invalid or not published: We expect an error message in the console and a fallback message on-screen.
-    // 3) If the sheet is empty: We expect no cards to display, but no crash.
-    // 4) If the doc link is actually a 2PACX link (like a Google Docs link or share link) and not a GSheet ID:
-    //    We expect a 400 (Bad Request) from opensheet.vercel.app, which is what's happening now.
+    // The Google Sheets API endpoint for array-of-arrays:
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
 
-    // PLEASE CONFIRM:
-    // - Is '2PACX-1vQSM-lJx6...' truly your sheet's ID?
-    // - If not, what is the correct doc ID from your actual Google Sheet URL?
-
-    const sheetUrl = "https://opensheet.vercel.app/1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo/ONSITE%20-%20CAFETERIA%20(A)";
-
-    async function fetchTanData() {
+    // ===============================
+    // Step 2: Fetch and parse
+    // ===============================
+    async function fetchSheetData() {
       try {
-        const res = await fetch(sheetUrl);
+        const res = await fetch(url);
         if (!res.ok) {
-          // The sheet might be missing or not publicly published,
-          // or the doc ID is invalid for opensheet.
-          throw new Error(`Failed to load sheet. HTTP status ${res.status}`);
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        const rows = data.values; // <--- array of arrays
+        if (!rows || !Array.isArray(rows)) {
+          throw new Error("Sheet data not returned as an array of arrays.");
+        }
+        if (rows.length === 0) {
+          console.warn("No rows found in this sheet/range.");
         }
 
-        const rows = await res.json();
-        if (!Array.isArray(rows) || rows.length === 0) {
-          console.warn("Sheet is empty or not returned as an array.");
-        }
+        // Skip the first row if it's headers. Or decide how to treat row[0].
+        // We'll skip row[0] here if it's a header row.
+        // If not, remove this line.
+        const actualData = rows.slice(1);
 
-        // We'll do a simple search:
-        // 1) Find the row(s) that contain 'Tan' in *any* column.
-        // 2) Then show that row. If the user wants EXACT 3-cells-to-the-left logic,
-        //    we can clarify or use an array-of-arrays approach.
-
-        const cardsDiv = document.getElementById('cards');
-
-        // Ask the user: "What is the expected behavior if multiple rows have 'Tan'?" 
-        // For now, we'll display them all.
-
-        rows.forEach((rowObj) => {
-          let foundTan = false;
-          let foundKey = "";
-          for (const key in rowObj) {
-            if (rowObj[key] && rowObj[key].toString().includes("Yvette")) {
-              foundTan = true;
-              foundKey = key;
-              break;
-            }
-          }
-
-          if (!foundTan) return; // skip if Tan not found
-
-          const dataStrings = Object.entries(rowObj)
-            .map(([k, v]) => `${k}: ${v}`)
-            .join("<br>");
-
-          // Create a simple card
-          const card = document.createElement('div');
-          card.className = "bg-white p-4 rounded shadow";
-          card.innerHTML = `
-            <h2 class="text-lg font-bold mb-2">Found 'Tan' in column: ${foundKey}</h2>
-            <p class="text-sm">${dataStrings}</p>
-          `;
-          cardsDiv.appendChild(card);
-        });
+        displayTanMatches(actualData);
       } catch (err) {
-        console.error("Error fetching sheet:", err);
-        // Provide a friendly message on-screen for the user.
-        const cardsDiv = document.getElementById('cards');
-        const errorEl = document.createElement('div');
-        errorEl.className = "bg-red-100 text-red-700 p-4 rounded";
-        errorEl.textContent = 
-          "Failed to load data. Please check if the sheet is published, " + 
-          "the sheet ID is correct, and that opensheet.vercel.app can access it.";
-        cardsDiv.appendChild(errorEl);
+        console.error("Error fetching sheet data:", err);
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `
+          <div class="bg-red-100 text-red-700 p-4 rounded">
+            Failed to load data: ${err.message}
+          </div>
+        `;
       }
     }
 
-    // Always ask the user what the exact expected behavior is if there's ambiguity.
-    // For instance, do we want partial or exact matches for 'Tan'? Are there columns we should ignore?
+    // ===============================
+    // Step 3: Find "Tan" and show 3 left cells
+    // ===============================
+    function displayTanMatches(allRows) {
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = ""; // clear old results
 
-    fetchTanData();
+      // For each row, we check each cell for "Tan"
+      allRows.forEach((row, rowIndex) => {
+        // row is like ["someval", "someval", "Tan", "another", ...]
+        if (!row) return;
+
+        // We’ll gather all matches in this row
+        let rowFoundAny = false;
+
+        for (let col = 0; col < row.length; col++) {
+          const cellValue = row[col] || "";
+          // Check for partial match "Tan"
+          if (cellValue.includes("Tan")) {
+            rowFoundAny = true;
+
+            // Grab up to 3 cells to the left
+            const leftCells = [];
+            for (let offset = 1; offset <= 3; offset++) {
+              const leftCol = col - offset;
+              if (leftCol >= 0) {
+                leftCells.push(row[leftCol]);
+              }
+            }
+
+            // Let's display the match
+            const card = document.createElement("div");
+            card.className = "bg-white p-4 rounded shadow";
+
+            // Show each left cell
+            const leftCellsStr = leftCells
+              .reverse() // so it prints from leftmost to rightmost
+              .map((val, i) => `<li>Cell ${col - (i+1)}: ${val}</li>`)
+              .join("");
+
+            card.innerHTML = `
+              <h2 class="text-lg font-bold mb-2">
+                Found "Tan" in Row ${rowIndex+2}, Column ${col+1}
+              </h2>
+              <p class="text-sm">
+                <strong>Cell Value:</strong> ${cellValue}
+              </p>
+              <ul class="pl-4 list-disc mt-2">
+                <li><strong>3 cells to the left</strong> (if exist):</li>
+                ${leftCellsStr || "<li>None (out of bounds)</li>"}
+              </ul>
+            `;
+            resultsDiv.appendChild(card);
+          }
+        }
+
+        // If rowFoundAny stays false, we skip
+      });
+    }
+
+    // ===============================
+    // Let's go
+    // ===============================
+    fetchSheetData();
+
   </script>
 </body>
 </html>
+
