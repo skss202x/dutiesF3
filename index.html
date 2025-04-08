@@ -4,13 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prefect Duties</title>
-<!-- ✅ FIXED TABLETOP.JS -->
-<script src="https://cdn.jsdelivr.net/npm/tabletop@1.5.4/tabletop.min.js"></script>
-
-<!-- ✅ TAILWIND FOR DEVELOPMENT -->
-<script src="https://cdn.tailwindcss.com"></script>
-
- 
+  <!-- ✅ TAILWIND FOR DEVELOPMENT -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       background: #0f172a;
@@ -33,7 +28,31 @@
   </div>
 
   <script>
-    const publicSpreadsheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5FKkqKpx4DJMFu16zfK5PQvaK3mS4KQsqFTx5p7-cuLvbYC44yzvyXi_T_ap9TPOTjDU58vlHpslu/pubhtml';
+    async function fetchSheetData() {
+      const sheetId = '11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE';
+      const sheetName = 'Sheet1';
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?alt=json&key=YOUR_GOOGLE_API_KEY`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const rows = data.values;
+
+        const headers = rows[0];
+        const entries = rows.slice(1).map(row => {
+          const entry = {};
+          headers.forEach((header, i) => {
+            entry[header] = row[i] || '';
+          });
+          return entry;
+        });
+
+        showInfo(entries);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        document.getElementById('duties').innerHTML = '<p class="text-center text-red-400">Failed to load data. Check API key and permissions.</p>';
+      }
+    }
 
     function showInfo(data) {
       const container = document.getElementById('duties');
@@ -48,13 +67,7 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      Tabletop.init({
-        key: publicSpreadsheetURL,
-        callback: showInfo,
-        simpleSheet: true
-      });
-    });
+    window.addEventListener('DOMContentLoaded', fetchSheetData);
   </script>
 
 </body>
