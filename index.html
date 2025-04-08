@@ -36,12 +36,12 @@
 </head>
 <body class="text-white">
 
-  <div class="min-h-screen p-8">
-    <h1 class="text-3xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
+  <div class="min-h-screen p-4 sm:p-6 md:p-8">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
       Seb's F3 Prefect Duties Dashboard
     </h1>
-    <h2 id="week-date" class="text-center text-orange-200 text-xl italic mb-10"></h2>
-    <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+    <h2 id="week-date" class="text-center text-orange-200 text-xl sm:text-2xl italic mb-10"></h2>
+    <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"></div>
   </div>
 
   <script>
@@ -53,7 +53,6 @@
         const res = await fetch(url);
         const data = await res.json();
 
-        // Display the date from the first row's "Week Date" field
         const weekDate = data[0]["Week Date"] || "";
         if (weekDate) {
           document.getElementById('week-date').textContent = `Week: ${weekDate}`;
@@ -61,9 +60,8 @@
 
         const container = document.getElementById('duties');
         data.forEach((row, index) => {
-  if (index === 0) return; // Skip header row only if Week Date is there
+          if (index === 0) return;
 
-     
           const name = row["Prefect Name"] || "Unnamed Prefect";
           const mainDuty = row["Duty"] || "-";
 
@@ -77,10 +75,10 @@
           if (allDuties.length === 0) return;
 
           const card = document.createElement('div');
-          card.className = 'card rounded-2xl p-6 shadow-lg';
+          card.className = 'card rounded-2xl p-4 sm:p-6 shadow-lg';
           card.innerHTML = `
-            <h2 class="text-2xl font-bold mb-2 geo-earth-agate">${name}</h2>
-            <ul class="list-disc list-inside text-orange-100 text-lg">
+            <h2 class="text-xl sm:text-2xl font-bold mb-2 geo-earth-agate">${name}</h2>
+            <ul class="list-disc list-inside text-orange-100 text-base sm:text-lg">
               ${allDuties.map(d => `<li>${d}</li>`).join('')}
             </ul>
           `;
