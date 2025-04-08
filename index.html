@@ -15,7 +15,7 @@
       font-family: 'Inter', sans-serif;
     }
     .card {
-      background: rgba(0, 0, 0, 0.6); /* More opaque */
+      background: rgba(0, 0, 0, 0.6); /* Shiny blackish */
       border: 1px solid rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(6px);
       transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -25,23 +25,20 @@
       box-shadow: 0 0 30px rgba(255, 122, 0, 0.4);
       border-color: rgba(255, 122, 0, 0.6);
     }
-    .geo-earth-agate {
-      background: linear-gradient(135deg, #ff6b00 0%, #ffb347 100%);
+    .shiny-title {
+      background: linear-gradient(145deg, #000000, #333333);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
     }
   </style>
 </head>
 <body class="text-white">
 
   <div class="min-h-screen p-8">
-    <h1 class="text-6xl font-extrabold text-center mb-4 geo-earth-agate animate-pulse drop-shadow-[0_2px_10px_rgba(100,100,0,0.9)]">
-  Seb's F3 Prefect Duties Dashboard
-      <h1 class="text-7xl font-extrabold tracking-wider text-center mb-4 geo-earth-agate animate-pulse drop-shadow-[0_2px_12px_rgba(100,100,0,0.9)]">
-
-</h1>
-
-
+    <h1 class="text-6xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
+      Seb's F3 Prefect Duties Dashboard
     </h1>
     <h2 id="week-date" class="text-center text-orange-200 text-lg italic mb-10"></h2>
     <div id="duties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
