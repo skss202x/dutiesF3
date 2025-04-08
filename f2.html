@@ -2,26 +2,42 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Find Tan (Plus 3 Cells to the Left)</title>
+  <title>Find Yvette + 3 Cells to the Left</title>
   <!-- Tailwind (For quick styling). For production, consider bundling locally -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-  <h1 class="text-2xl font-bold mb-4">Find "Tan" + 3 Cells to the Left</h1>
+  <h1 class="text-2xl font-bold mb-4">Search for Yvette + 3 Cells to the Left</h1>
+
+  <!-- Search box -->
+  <div class="mb-4 flex gap-2">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Enter your search term..."
+      class="border border-gray-300 rounded px-2 py-1 focus:outline-none"
+    />
+    <button
+      id="searchBtn"
+      class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+    >Search</button>
+  </div>
+
   <div id="results" class="w-full max-w-xl flex flex-col gap-4"></div>
 
   <script>
     // ===============================
     // Step 1: Configure your sheet info
     // ===============================
-    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c"; 
+    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
     // Update the range if your tab is named something else:
-    const range = "ONSITE - CAFETERIA (A)!A1:J1000"; 
-    // e.g. "ONSITE - CAFETERIA (A)!A1:Z1000" if that’s your sheet tab name.
+    const range = "ONSITE - CAFETERIA (A)!A1:J1000";
 
     // The Google Sheets API endpoint for array-of-arrays:
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?key=${apiKey}`;
+
+    let cachedRows = [];
 
     // ===============================
     // Step 2: Fetch and parse
@@ -41,12 +57,12 @@
           console.warn("No rows found in this sheet/range.");
         }
 
-        // Skip the first row if it's headers. Or decide how to treat row[0].
-        // We'll skip row[0] here if it's a header row.
-        // If not, remove this line.
-        const actualData = rows.slice(1);
+        // We'll store rows so we can re-filter them.
+        // We'll skip the first row if it's headers.
+        cachedRows = rows.slice(1);
 
-        displayTanMatches(actualData);
+        // Initially, let's display all 'Yvette' matches automatically.
+        displayMatches("Yvette");
       } catch (err) {
         console.error("Error fetching sheet data:", err);
         const resultsDiv = document.getElementById("results");
@@ -59,25 +75,24 @@
     }
 
     // ===============================
-    // Step 3: Find "Tan" and show 3 left cells
+    // Step 3: Find searchTerm + show 3 left cells
     // ===============================
-    function displayTanMatches(allRows) {
+    function displayMatches(searchTerm) {
       const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = ""; // clear old results
 
-      // For each row, we check each cell for "Tan"
-      allRows.forEach((row, rowIndex) => {
-        // row is like ["someval", "someval", "Tan", "another", ...]
+      // For each row, we check each cell for the searchTerm
+      cachedRows.forEach((row, rowIndex) => {
         if (!row) return;
 
-        // We’ll gather all matches in this row
-        let rowFoundAny = false;
+        let rowHasMatch = false;
 
         for (let col = 0; col < row.length; col++) {
           const cellValue = row[col] || "";
-          // Check for partial match "Tan"
-          if (cellValue.includes("Yvette")) {
-            rowFoundAny = true;
+
+          // Check if the cell includes the search term
+          if (cellValue.includes(searchTerm)) {
+            rowHasMatch = true;
 
             // Grab up to 3 cells to the left
             const leftCells = [];
@@ -100,7 +115,7 @@
 
             card.innerHTML = `
               <h2 class="text-lg font-bold mb-2">
-                Found "Tan" in Row ${rowIndex+2}, Column ${col+1}
+                Found "${searchTerm}" in Row ${rowIndex+2}, Column ${col+1}
               </h2>
               <p class="text-sm">
                 <strong>Cell Value:</strong> ${cellValue}
@@ -113,10 +128,29 @@
             resultsDiv.appendChild(card);
           }
         }
-
-        // If rowFoundAny stays false, we skip
       });
     }
+
+    // ===============================
+    // Search button logic
+    // ===============================
+    document.getElementById("searchBtn").addEventListener("click", () => {
+      const inputVal = document.getElementById("searchInput").value.trim();
+      if (!cachedRows || cachedRows.length === 0) return;
+      if (!inputVal) {
+        // If empty, let's clear the results or show a message
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `
+          <div class="bg-yellow-100 text-yellow-700 p-4 rounded">
+            Please enter a search term.
+          </div>
+        `;
+        return;
+      }
+
+      // Do the search
+      displayMatches(inputVal);
+    });
 
     // ===============================
     // Let's go
@@ -126,4 +160,3 @@
   </script>
 </body>
 </html>
-
