@@ -4,13 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Prefect Duties</title>
-
   <!-- ✅ TAILWIND FOR DEVELOPMENT -->
   <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- ✅ FIXED TABLETOP CDN -->
   <script src="https://cdn.jsdelivr.net/gh/jsoma/tabletop@1.5.1/src/tabletop.min.js"></script>
-
   <style>
     body {
       background: #0f172a;
@@ -25,7 +22,6 @@
     }
   </style>
 </head>
-
 <body class="text-white">
 
   <div class="min-h-screen p-8">
@@ -37,10 +33,27 @@
     const publicSpreadsheetURL = 'https://docs.google.com/spreadsheets/d/11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE/pubhtml';
 
     function showInfo(data) {
+      console.log("Fetched data from Tabletop:", data);
       const container = document.getElementById('duties');
-      container.innerHTML = ''; // clear previous content
       data.forEach(row => {
         const card = document.createElement('div');
         card.className = 'card bg-slate-800 rounded-2xl p-6 shadow-md';
         card.innerHTML = `
-          <h2 class="text-2xl font-semibold mb-2 text-sky-400">${row.name}</
+          <h2 class="text-2xl font-semibold mb-2 text-sky-400">${row.name}</h2>
+          <p class="text-base text-gray-300">${row.duty}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      Tabletop.init({
+        key: publicSpreadsheetURL,
+        callback: showInfo,
+        simpleSheet: true
+      });
+    });
+  </script>
+
+</body>
+</html>
