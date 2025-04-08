@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Find Yvette + 3 Cells to the Left</title>
+  <title>Search Google Sheet + 3 Cells to the Left</title>
   <!-- Tailwind (For quick styling). For production, consider bundling locally -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-  <h1 class="text-2xl font-bold mb-4">Search for Yvette + 3 Cells to the Left</h1>
+  <h1 class="text-2xl font-bold mb-4">Search & Display + 3 Cells Left</h1>
 
   <!-- Search box -->
   <div class="mb-4 flex gap-2">
@@ -61,8 +61,6 @@
         // We'll skip the first row if it's headers.
         cachedRows = rows.slice(1);
 
-        // Initially, let's display all 'Yvette' matches automatically.
-        displayMatches("Yvette");
       } catch (err) {
         console.error("Error fetching sheet data:", err);
         const resultsDiv = document.getElementById("results");
@@ -85,15 +83,11 @@
       cachedRows.forEach((row, rowIndex) => {
         if (!row) return;
 
-        let rowHasMatch = false;
-
         for (let col = 0; col < row.length; col++) {
           const cellValue = row[col] || "";
 
           // Check if the cell includes the search term
           if (cellValue.includes(searchTerm)) {
-            rowHasMatch = true;
-
             // Grab up to 3 cells to the left
             const leftCells = [];
             for (let offset = 1; offset <= 3; offset++) {
@@ -103,19 +97,19 @@
               }
             }
 
-            // Let's display the match
+            // Create a card for the match
             const card = document.createElement("div");
             card.className = "bg-white p-4 rounded shadow";
 
             // Show each left cell
             const leftCellsStr = leftCells
-              .reverse() // so it prints from leftmost to rightmost
-              .map((val, i) => `<li>Cell ${col - (i+1)}: ${val}</li>`)
+              .reverse() // prints from leftmost to rightmost
+              .map((val, i) => `<li>Cell ${col - (i + 1)}: ${val}</li>`)
               .join("");
 
             card.innerHTML = `
               <h2 class="text-lg font-bold mb-2">
-                Found "${searchTerm}" in Row ${rowIndex+2}, Column ${col+1}
+                Found "${searchTerm}" in Row ${rowIndex + 2}, Column ${col + 1}
               </h2>
               <p class="text-sm">
                 <strong>Cell Value:</strong> ${cellValue}
@@ -136,7 +130,16 @@
     // ===============================
     document.getElementById("searchBtn").addEventListener("click", () => {
       const inputVal = document.getElementById("searchInput").value.trim();
-      if (!cachedRows || cachedRows.length === 0) return;
+      if (!cachedRows || cachedRows.length === 0) {
+        // Possibly not loaded yet or no data
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `
+          <div class="bg-yellow-100 text-yellow-700 p-4 rounded">
+            The sheet hasn't loaded or is empty. Please try again.
+          </div>
+        `;
+        return;
+      }
       if (!inputVal) {
         // If empty, let's clear the results or show a message
         const resultsDiv = document.getElementById("results");
@@ -148,7 +151,6 @@
         return;
       }
 
-      // Do the search
       displayMatches(inputVal);
     });
 
@@ -156,7 +158,6 @@
     // Let's go
     // ===============================
     fetchSheetData();
-
   </script>
 </body>
 </html>
