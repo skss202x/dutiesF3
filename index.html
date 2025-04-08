@@ -41,11 +41,24 @@
 
         const container = document.getElementById('duties');
         data.forEach(row => {
+          const name = row["Prefect Name"] || "Unnamed Prefect";
+          const mainDuty = row["Duty"] || "-";
+
+          // Collect all additional duties from extra columns (e.g., undefined keys)
+          const extraDuties = Object.keys(row)
+            .filter(key => key !== "Prefect Name" && key !== "Duty" && key !== "" && key !== undefined)
+            .map(key => row[key])
+            .filter(d => d && d.trim() !== "-");
+
+          const allDuties = [mainDuty, ...extraDuties].filter(d => d && d.trim() !== "-");
+
           const card = document.createElement('div');
           card.className = 'card bg-slate-800 rounded-2xl p-6 shadow-md';
           card.innerHTML = `
-            <h2 class="text-2xl font-semibold mb-2 text-sky-400">${row["Prefect Name"]}</h2>
-            <p class="text-base text-gray-300">${row["Duty"]}</p>
+            <h2 class="text-2xl font-semibold mb-2 text-sky-400">${name}</h2>
+            <ul class="list-disc list-inside text-gray-300">
+              ${allDuties.map(d => `<li>${d}</li>`).join('')}
+            </ul>
           `;
           container.appendChild(card);
         });
