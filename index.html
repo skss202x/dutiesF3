@@ -37,7 +37,7 @@
 <body class="text-white">
 
   <div class="min-h-screen p-8">
-    <h1 class="text-6xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
+    <h1 class="text-3xl font-extrabold text-center mb-4 shiny-title animate-pulse tracking-wider">
       Seb's F3 Prefect Duties Dashboard
     </h1>
     <h2 id="week-date" class="text-center text-orange-200 text-lg italic mb-10"></h2>
@@ -60,7 +60,10 @@
         }
 
         const container = document.getElementById('duties');
-        data.slice(1).forEach(row => {
+        data.forEach((row, index) => {
+  if (index === 0) return; // Skip header row only if Week Date is there
+
+     
           const name = row["Prefect Name"] || "Unnamed Prefect";
           const mainDuty = row["Duty"] || "-";
 
