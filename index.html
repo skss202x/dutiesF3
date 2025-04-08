@@ -6,6 +6,7 @@
   <title>Prefect Duties</title>
   <!-- ✅ TAILWIND FOR DEVELOPMENT -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tabletop@1.5.4/tabletop.min.js"></script>
   <style>
     body {
       background: #0f172a;
@@ -28,31 +29,7 @@
   </div>
 
   <script>
-    async function fetchSheetData() {
-      const sheetId = '11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE';
-      const sheetName = 'Sheet1';
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?alt=json&key=YOUR_GOOGLE_API_KEY`;
-
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const rows = data.values;
-
-        const headers = rows[0];
-        const entries = rows.slice(1).map(row => {
-          const entry = {};
-          headers.forEach((header, i) => {
-            entry[header.trim().toLowerCase()] = row[i] || '';
-          });
-          return entry;
-        });
-
-        showInfo(entries);
-      } catch (error) {
-        console.error('Failed to load data:', error);
-        document.getElementById('duties').innerHTML = '<p class="text-center text-red-400">Failed to load data. Check API key and permissions.</p>';
-      }
-    }
+    const publicSpreadsheetURL = 'https://docs.google.com/spreadsheets/d/11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE/pubhtml';
 
     function showInfo(data) {
       const container = document.getElementById('duties');
@@ -67,7 +44,13 @@
       });
     }
 
-    window.addEventListener('DOMContentLoaded', fetchSheetData);
+    window.addEventListener('DOMContentLoaded', () => {
+      Tabletop.init({
+        key: publicSpreadsheetURL,
+        callback: showInfo,
+        simpleSheet: true
+      });
+    });
   </script>
 
 </body>
