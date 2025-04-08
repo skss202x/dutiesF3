@@ -31,7 +31,7 @@
     async function fetchSheetData() {
       const sheetId = '11pmHt98QliIwLiMnUAesIo-Pq9ZXMvIJ6YgqUOAiIAE';
       const sheetName = 'Sheet1';
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?alt=json&key=AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?alt=json&key=YOUR_GOOGLE_API_KEY`;
 
       try {
         const response = await fetch(url);
@@ -42,7 +42,7 @@
         const entries = rows.slice(1).map(row => {
           const entry = {};
           headers.forEach((header, i) => {
-            entry[header] = row[i] || '';
+            entry[header.trim().toLowerCase()] = row[i] || '';
           });
           return entry;
         });
