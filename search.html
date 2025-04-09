@@ -4,26 +4,42 @@
   <meta charset="utf-8" />
   <title>Prefect Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Helps ensure we don't exceed mobile widths */
+    .container {
+      max-width: 480px; /* approximate phone-friendly width */
+      width: 100%;
+    }
+    /* Make everything a bit smaller for less scrolling */
+    body {
+      font-size: 0.95rem; /* slightly smaller base font */
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-6">
-  <h1 class="text-3xl font-bold mb-6 text-pink-600 drop-shadow">Search 🔎 for your duties </h1>
+<body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-4">
+  <div class="container">
+    <h1 class="text-2xl font-bold mb-4 text-pink-600 drop-shadow text-center">Search 🔎 for your Cafeteria, Assembly and Latecomers duties</h1>
 
-  <div class="mb-8 flex gap-4 w-full max-w-xl">
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="Your name... "
-      class="border border-gray-300 rounded px-4 py-3 w-full text-lg focus:outline-none shadow-sm"
-    />
-    <button
-      id="searchBtn"
-      class="bg-pink-500 text-white px-6 py-3 rounded shadow hover:bg-pink-600"
-    >Search</button>
+    <!-- Adjusted layout: stack the input & button vertically on mobile -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Your name... "
+        class="border border-gray-300 rounded px-3 py-2 w-full text-base focus:outline-none shadow-sm"
+      />
+      <button
+        id="searchBtn"
+        class="bg-pink-500 text-white px-4 py-2 rounded shadow hover:bg-pink-600"
+      >Search</button>
+    </div>
+
+    <div id="results" class="flex flex-col gap-4"></div>
+
+    <footer class="mt-8 text-center text-base text-gray-700 font-bold">
+      Made by Tan Sebastian Poe Ryu (belanja me 🍜)
+    </footer>
   </div>
-
-  <div id="results" class="w-full max-w-5xl flex flex-col gap-6"></div>
-
-  <footer class="mt-12 text-lg text-gray-700 bold">Made by Tan Sebastian Poe Ryu (belanja me 🍜)</footer>
 
   <script>
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
@@ -54,29 +70,26 @@
 
     function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass) {
       const card = document.createElement("div");
-      card.className = `p-5 rounded shadow border-l-8 ${colorClass}`;
+      card.className = `p-4 rounded shadow border-l-8 ${colorClass}`;
 
-      // Just show the values with magnifying glass, no "Cell X" or count
-const leftItems = leftCells
-  .reverse()
-  .map(val => `<li>🔎 ${val}</li>`)
-  .join("");
+      // Show the "leftCells" with magnifying glass
+      const leftItems = leftCells
+        .reverse()
+        .map(val => `<li>🔎 ${val}</li>`)
+        .join("");
 
-card.innerHTML = `
-  <div class="flex justify-between items-center mb-1">
-    <h2 class="text-lg font-bold text-gray-800">${sheetName}</h2>
-    <p class="text-sm text-gray-800">
-      <strong>Name:</strong> ${match}
-    </p>
-  </div>
-  <p class="text-xs">Row ${rowIndex + 2}, Column ${colIndex + 1}</p>
-  <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
-    ${leftItems || "<li><em>None found</em></li>"}
-  </ul>
-`;
-
-     
-
+      card.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
+          <p class="text-sm text-gray-800">
+            <strong>Name:</strong> ${match}
+          </p>
+        </div>
+        <p class="text-xs mb-1">Row ${rowIndex + 2}, Column ${colIndex + 1}</p>
+        <ul class="pl-4 list-disc text-sm text-gray-700">
+          ${leftItems || "<li><em>None found</em></li>"}
+        </ul>
+      `;
       return card;
     }
 
@@ -88,16 +101,21 @@ card.innerHTML = `
       resultsDiv.innerHTML = "";
 
       if (!term) {
-        resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-4 rounded">Please enter a search term.</div>`;
+        resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter a search term.</div>`;
         return;
       }
+
+      // Lowercase the user's search term for case-insensitive matching
+      const lowerTerm = term.toLowerCase();
 
       for (const { name, range, left, color } of sheetConfigs) {
         try {
           cachedData = await fetchSheet(name, range);
           cachedData.forEach((row, rowIndex) => {
-            row?.forEach((cell, colIndex) => {
-              if (cell?.includes(term)) {
+            if (!row) return;
+            row.forEach((cell, colIndex) => {
+              // Compare lowercased cell with lowercased search term
+              if (cell?.toLowerCase().includes(lowerTerm)) {
                 const leftData = [];
                 for (let i = 1; i <= left; i++) {
                   const leftCol = colIndex - i;
@@ -112,7 +130,7 @@ card.innerHTML = `
           });
         } catch (err) {
           console.error(err);
-          resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-4 rounded">Error loading ${name}</div>`;
+          resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
         }
       }
     });
