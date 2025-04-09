@@ -8,30 +8,34 @@
     /* Helps ensure we don't exceed mobile widths */
     .container {
       max-width: 480px; /* approximate phone-friendly width */
-      width: 100%;
+      width: 90%;
     }
     /* Make everything a bit smaller for less scrolling */
     body {
-      font-size: 0.95rem; /* slightly smaller base font */
+      font-size: 0.90rem; /* slightly smaller base font */
     }
   </style>
 </head>
 <body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-4">
   <div class="container">
-    <h1 class="text-2xl font-bold mb-4 text-pink-600 drop-shadow text-center">Search 🔎 for your Cafeteria, Assembly and Latecomers duties</h1>
+    <h1 class="text-2xl font-bold mb-4 text-pink-600 drop-shadow text-center">
+      Search 🔎 for your Cafeteria, Assembly and Latecomers duties (Not for Probies)
+    </h1>
 
-    <!-- Adjusted layout: stack the input & button vertically on mobile -->
-    <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full">
+    <!-- Only changed this section for a shorter input & bigger button -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full items-center justify-center">
       <input
         id="searchInput"
         type="text"
-        placeholder="Your name... "
-        class="border border-gray-300 rounded px-3 py-2 w-full text-base focus:outline-none shadow-sm"
+        placeholder="Your name..."
+        class="border border-gray-300 rounded px-2 py-2 text-base focus:outline-none shadow-sm w-48"
       />
       <button
         id="searchBtn"
-        class="bg-pink-500 text-white px-4 py-2 rounded shadow hover:bg-pink-600"
-      >Search</button>
+        class="bg-pink-500 text-white px-6 py-3 text-lg rounded shadow hover:bg-pink-600"
+      >
+        Search
+      </button>
     </div>
 
     <div id="results" class="flex flex-col gap-4"></div>
@@ -42,8 +46,8 @@
   </div>
 
   <script>
-    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
-    const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
+    const apiKey = "AIzaSy...";
+    const sheetId = "1BsGqMhxwT...";
     const sheetConfigs = [
       { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-pink-400 bg-pink-50' },
       { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-green-400 bg-green-50' },
@@ -72,29 +76,23 @@
       const card = document.createElement("div");
       card.className = `p-4 rounded shadow border-l-8 ${colorClass}`;
 
-      // Show the "leftCells" with magnifying glass
       const leftItems = leftCells
         .reverse()
         .map(val => `<li>🔎 ${val}</li>`)
         .join("");
 
       card.innerHTML = `
-
-<div class="flex justify-between items-center mb-2">
-  <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
-  
-  <!-- Right-aligned container for Name + Row/Column -->
-  <div class="flex flex-col text-right">
-    <p class="text-sm text-gray-800">
-      <strong>Name:</strong> ${match}
-    </p>
-    <p class="text-xs text-gray-600 mb-1">
-      Row ${rowIndex + 2}, Column ${colIndex + 1}
-    </p>
-  </div>
-</div>
-
-    
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
+          <div class="flex flex-col text-right">
+            <p class="text-sm text-gray-800">
+              <strong>Name:</strong> ${match}
+            </p>
+            <p class="text-xs text-gray-600 mb-1">
+              Row ${rowIndex + 2}, Column ${colIndex + 1}
+            </p>
+          </div>
+        </div>
         <ul class="pl-4 list-disc text-sm text-gray-700">
           ${leftItems || "<li><em>None found</em></li>"}
         </ul>
@@ -114,7 +112,6 @@
         return;
       }
 
-      // Lowercase the user's search term for case-insensitive matching
       const lowerTerm = term.toLowerCase();
 
       for (const { name, range, left, color } of sheetConfigs) {
@@ -123,7 +120,6 @@
           cachedData.forEach((row, rowIndex) => {
             if (!row) return;
             row.forEach((cell, colIndex) => {
-              // Compare lowercased cell with lowercased search term
               if (cell?.toLowerCase().includes(lowerTerm)) {
                 const leftData = [];
                 for (let i = 1; i <= left; i++) {
