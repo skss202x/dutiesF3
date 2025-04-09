@@ -2,33 +2,46 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
   <meta charset="utf-8" />
   <title>Prefect Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Helps ensure we don't exceed mobile widths */
     .container {
-      max-width: 480px; /* approximate phone-friendly width */
+      max-width: 480px;
       width: 100%;
     }
-    /* Make everything a bit smaller for less scrolling */
+
     body {
-      font-size: 0.92rem; /* slightly smaller base font */
+      font-size: 0.92rem;
+    }
+
+    /* ✨ Shiny text animation */
+    .shine {
+      background: linear-gradient(90deg, #aaa, #fff, #aaa);
+      background-size: 200% auto;
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+      animation: shine 2.5s linear infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        background-position: 200% center;
+      }
+      100% {
+        background-position: -200% center;
+      }
     }
   </style>
 </head>
 <body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-4 pt-6">
   <div class="container">
- 
-
     <h1 class="text-xl font-bold mb-4 text-pink-600 drop-shadow text-center">
-  🔎 Prefect Duties Search (Cafe, Assembly, Latecomers) 
-  <span class="text-lg text-gray-600 font-normal">  (⛔ Not for Probies)</span>
-</h1>
+      🔎 Prefect Duties Search (Cafe, Assembly, Latecomers) 
+      <span class="text-lg text-gray-600 font-normal"> (⛔ Not for Probies)</span>
+    </h1>
 
-
-    <!-- Only changed this section for a shorter input & bigger button -->
     <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full items-center justify-center">
       <input
         id="searchInput"
@@ -36,135 +49,130 @@
         placeholder="Your name..."
         class="border border-gray-300 rounded px-2 py-2 text-base focus:outline-none shadow-sm w-48"
       />
-
       <button
-  id="searchBtn"
-  class="
-    bg-gradient-to-r from-purple-500 to-blue-700
-    text-white px-6 py-3 text-lg rounded shadow
-    transition-transform duration-300 ease-in-out
-    hover:scale-105 hover:shadow-xl
-    animate-pulse
-  "
->
-  Search
-</button>
-
-  
+        id="searchBtn"
+        class="
+          bg-gradient-to-r from-purple-500 to-blue-700
+          text-white px-6 py-3 text-lg rounded shadow
+          transition-transform duration-300 ease-in-out
+          hover:scale-105 hover:shadow-xl
+          animate-pulse
+        "
+      >
+        Search
+      </button>
     </div>
 
     <div id="results" class="flex flex-col gap-4"></div>
 
     <footer class="mt-2 text-sm text-gray-800 font-bold">
-   Updated on : 9 April 2025
-     
-  <p class="mt-2 text-sm text-gray-500 font-normal">
-    Tip: Search using your unique name, remember to scroll down to see the whole list & use at your own discretion (pls tell admin not to make last minute changes 🤲). If you see incomplete data that means the main dutysheet is incomplete as well. I welcome any improvement feedbacks.
-  </p>
-        <p class="mt-7 text-center text-sm text-gray-700 font-normal">
- An Initiative by Tan Sebastian Poe Ryu© 2 Aristotle
-        </p>
-</footer>
+      Updated on : 9 April 2025
+      
+      <p class="mt-2 text-sm text-gray-500 font-normal">
+        Tip: Search using your unique name, remember to scroll down to see the whole list & use at your own discretion (pls tell admin not to make last minute changes 🤲). If you see incomplete data that means the main dutysheet is incomplete as well. I welcome any improvement feedbacks.
+      </p>
 
+      <!-- ✨ Shiny animated footer line -->
+      <p class="mt-7 text-center text-sm font-semibold shine">
+        An Initiative by Tan Sebastian Poe Ryu© 2 Aristotle
+      </p>
+    </footer>
 
-  <script>
-   
-    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
-    const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
-    const sheetConfigs = [
-      { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-400 bg-purple-50' },
-            { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-400 bg-blue-50' },
-      { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-pink-400 bg-pink-50' },
-      { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-green-400 bg-green-50' },
+    <script>
+      const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
+      const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
+      const sheetConfigs = [
+        { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-400 bg-purple-50' },
+        { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-400 bg-blue-50' },
+        { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-pink-400 bg-pink-50' },
+        { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-green-400 bg-green-50' },
+      ];
 
-     
-    ];
-
-    async function fetchSheet(sheetName, range) {
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
-      const json = await res.json();
-      return json.values?.slice(1) || [];
-    }
-
-    function getMergedSafeValue(row, colIndex) {
-      for (let r = row; r >= 0; r--) {
-        if (cachedData[r] && cachedData[r][colIndex]) {
-          return cachedData[r][colIndex];
-        }
+      async function fetchSheet(sheetName, range) {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
+        const json = await res.json();
+        return json.values?.slice(1) || [];
       }
-      return "";
-    }
 
-    function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass) {
-      const card = document.createElement("div");
-      card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-transform duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer`;
+      function getMergedSafeValue(row, colIndex) {
+        for (let r = row; r >= 0; r--) {
+          if (cachedData[r] && cachedData[r][colIndex]) {
+            return cachedData[r][colIndex];
+          }
+        }
+        return "";
+      }
 
+      function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass) {
+        const card = document.createElement("div");
+        card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-all duration-200 hover:shadow-xl hover:scale-[1.02] hover:bg-white/50 cursor-pointer`;
 
-      const leftItems = leftCells
-        .reverse()
-        .map(val => `<li>🔎 ${val}</li>`)
-        .join("");
+        const leftItems = leftCells
+          .reverse()
+          .map(val => `<li>🔎 ${val}</li>`)
+          .join("");
 
-      card.innerHTML = `
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
-          <div class="flex flex-col text-right">
-            <p class="text-sm text-gray-800">
-              <strong>Name:</strong> ${match}
-            </p>
-            <p class="text-xs text-gray-600 mb-1">
-              Row ${rowIndex + 2}, Column ${colIndex + 1}
-            </p>
+        card.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
+            <div class="flex flex-col text-right">
+              <p class="text-sm text-gray-800">
+                <strong>Name:</strong> ${match}
+              </p>
+              <p class="text-xs text-gray-600 mb-1">
+                Row ${rowIndex + 2}, Column ${colIndex + 1}
+              </p>
+            </div>
           </div>
-        </div>
-        <ul class="pl-4 list-disc text-sm text-gray-700">
-          ${leftItems || "<li><em>None found</em></li>"}
-        </ul>
-      `;
-      return card;
-    }
-
-    let cachedData = [];
-
-    document.getElementById("searchBtn").addEventListener("click", async () => {
-      const term = document.getElementById("searchInput").value.trim();
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
-
-      if (!term) {
-        resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter your name ⌛.</div>`;
-        return;
+          <ul class="pl-4 list-disc text-sm text-gray-700">
+            ${leftItems || "<li><em>None found</em></li>"}
+          </ul>
+        `;
+        return card;
       }
 
-      const lowerTerm = term.toLowerCase();
+      let cachedData = [];
 
-      for (const { name, range, left, color } of sheetConfigs) {
-        try {
-          cachedData = await fetchSheet(name, range);
-          cachedData.forEach((row, rowIndex) => {
-            if (!row) return;
-            row.forEach((cell, colIndex) => {
-              if (cell?.toLowerCase().includes(lowerTerm)) {
-                const leftData = [];
-                for (let i = 1; i <= left; i++) {
-                  const leftCol = colIndex - i;
-                  if (leftCol >= 0) {
-                    leftData.push(getMergedSafeValue(rowIndex, leftCol));
-                  }
-                }
-                const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color);
-                resultsDiv.appendChild(card);
-              }
-            });
-          });
-        } catch (err) {
-          console.error(err);
-          resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
+      document.getElementById("searchBtn").addEventListener("click", async () => {
+        const term = document.getElementById("searchInput").value.trim();
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+
+        if (!term) {
+          resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter your name ⌛.</div>`;
+          return;
         }
-      }
-    });
-  </script>
+
+        const lowerTerm = term.toLowerCase();
+
+        for (const { name, range, left, color } of sheetConfigs) {
+          try {
+            cachedData = await fetchSheet(name, range);
+            cachedData.forEach((row, rowIndex) => {
+              if (!row) return;
+              row.forEach((cell, colIndex) => {
+                if (cell?.toLowerCase().includes(lowerTerm)) {
+                  const leftData = [];
+                  for (let i = 1; i <= left; i++) {
+                    const leftCol = colIndex - i;
+                    if (leftCol >= 0) {
+                      leftData.push(getMergedSafeValue(rowIndex, leftCol));
+                    }
+                  }
+                  const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color);
+                  resultsDiv.appendChild(card);
+                }
+              });
+            });
+          } catch (err) {
+            console.error(err);
+            resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
+          }
+        }
+      });
+    </script>
+  </div>
 </body>
 </html>
