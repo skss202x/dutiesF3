@@ -62,16 +62,20 @@ const leftItems = leftCells
   .map(val => `<li>🔎 ${val}</li>`)
   .join("");
 
+card.innerHTML = `
+  <div class="flex justify-between items-center mb-1">
+    <h2 class="text-lg font-bold text-gray-800">${sheetName}</h2>
+    <p class="text-sm text-gray-800">
+      <strong>Name:</strong> ${match}
+    </p>
+  </div>
+  <p class="text-xs">Row ${rowIndex + 2}, Column ${colIndex + 1}</p>
+  <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
+    ${leftItems || "<li><em>None found</em></li>"}
+  </ul>
+`;
 
-      card.innerHTML = `
-        <h2 class="text-lg font-bold mb-1 text-gray-800">${sheetName}</h2>
-        <p class="text-xs">row ${rowIndex + 2}, column ${colIndex + 1}</p>
-        <p class="text-sm"><strong>Name:</strong> ${match}</p>
-        <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
-        
-          ${leftItems || "<li><em>None found</em></li>"}
-        </ul>
-      `;
+     
 
       return card;
     }
