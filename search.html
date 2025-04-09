@@ -2,35 +2,37 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Prefects Duties Dashboard</title>
+  <title>Seb Prefect Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-  <h1 class="text-2xl font-bold mb-4">Prefect Duties Dashboard</h1>
+<body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-6">
+  <h1 class="text-3xl font-bold mb-6 text-pink-700 drop-shadow">Search for your duties </h1>
 
-  <div class="mb-4 flex gap-2">
+  <div class="mb-8 flex gap-4 w-full max-w-xl">
     <input
       id="searchInput"
       type="text"
       placeholder="Your name..."
-      class="border border-gray-300 rounded px-2 py-1 focus:outline-none"
+      class="border border-gray-300 rounded px-4 py-3 w-full text-lg focus:outline-none shadow-sm"
     />
     <button
       id="searchBtn"
-      class="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+      class="bg-pink-500 text-white px-6 py-3 rounded shadow hover:bg-pink-600"
     >Search</button>
   </div>
 
-  <div id="results" class="w-full max-w-4xl flex flex-col gap-4"></div>
+  <div id="results" class="w-full max-w-5xl flex flex-col gap-6"></div>
+
+  <footer class="mt-12 text-sm text-gray-600 italic">Made by Sebastian</footer>
 
   <script>
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
     const sheetConfigs = [
-      { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3 },
-      { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3 },
-      { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5 },
-      { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5 },
+      { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-pink-400 bg-pink-50' },
+      { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-green-400 bg-green-50' },
+      { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-400 bg-blue-50' },
+      { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-400 bg-purple-50' },
     ];
 
     async function fetchSheet(sheetName, range) {
@@ -41,9 +43,18 @@
       return json.values?.slice(1) || [];
     }
 
-    function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm) {
+    function getMergedSafeValue(row, colIndex) {
+      for (let r = row; r >= 0; r--) {
+        if (cachedData[r] && cachedData[r][colIndex]) {
+          return cachedData[r][colIndex];
+        }
+      }
+      return "";
+    }
+
+    function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass) {
       const card = document.createElement("div");
-      card.className = "bg-white p-4 rounded shadow border-l-8 border-blue-500";
+      card.className = `p-5 rounded shadow border-l-8 ${colorClass}`;
 
       const leftItems = leftCells
         .reverse()
@@ -51,17 +62,19 @@
         .join("");
 
       card.innerHTML = `
-        <h2 class="text-lg font-bold mb-1 text-blue-700">${sheetName}</h2>
+        <h2 class="text-lg font-bold mb-1 text-gray-800">${sheetName}</h2>
         <p class="text-sm"><strong>Found in:</strong> "${searchTerm}" in row ${rowIndex + 2}, column ${colIndex + 1}</p>
-        <p class="text-sm"><strong>Name searched:</strong> ${match}</p>
+        <p class="text-sm"><strong>Name:</strong> ${match}</p>
         <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
-          <li><strong>${leftCells.length} cells to the left:</strong></li>
+         // <li><strong>${leftCells.length} cells to the left:</strong></li>
           ${leftItems || "<li><em>None found</em></li>"}
         </ul>
       `;
 
       return card;
     }
+
+    let cachedData = [];
 
     document.getElementById("searchBtn").addEventListener("click", async () => {
       const term = document.getElementById("searchInput").value.trim();
@@ -73,17 +86,20 @@
         return;
       }
 
-      for (const { name, range, left } of sheetConfigs) {
+      for (const { name, range, left, color } of sheetConfigs) {
         try {
-          const rows = await fetchSheet(name, range);
-          rows.forEach((row, rowIndex) => {
+          cachedData = await fetchSheet(name, range);
+          cachedData.forEach((row, rowIndex) => {
             row?.forEach((cell, colIndex) => {
               if (cell?.includes(term)) {
                 const leftData = [];
                 for (let i = 1; i <= left; i++) {
-                  if (colIndex - i >= 0) leftData.push(row[colIndex - i]);
+                  const leftCol = colIndex - i;
+                  if (leftCol >= 0) {
+                    leftData.push(getMergedSafeValue(rowIndex, leftCol));
+                  }
                 }
-                const card = createCard(name, cell, leftData, rowIndex, colIndex, term);
+                const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color);
                 resultsDiv.appendChild(card);
               }
             });
