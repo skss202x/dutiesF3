@@ -56,17 +56,19 @@
       const card = document.createElement("div");
       card.className = `p-5 rounded shadow border-l-8 ${colorClass}`;
 
-      const leftItems = leftCells
-        .reverse()
-        .map((val, i) => `<li><span class='font-semibold'>Cell ${colIndex - (i + 1)}</span>: ${val}</li>`)
-        .join("");
+      // Just show the values with magnifying glass, no "Cell X" or count
+const leftItems = leftCells
+  .reverse()
+  .map(val => `<li>🔍 ${val}</li>`)
+  .join("");
+
 
       card.innerHTML = `
         <h2 class="text-lg font-bold mb-1 text-gray-800">${sheetName}</h2>
         <p class="text-sm"><strong>Found in:</strong> "${searchTerm}" in row ${rowIndex + 2}, column ${colIndex + 1}</p>
         <p class="text-sm"><strong>Name:</strong> ${match}</p>
         <ul class="pl-4 list-disc mt-2 text-sm text-gray-700">
-         // <li><strong>${leftCells.length} cells to the left:</strong></li>
+        
           ${leftItems || "<li><em>None found</em></li>"}
         </ul>
       `;
