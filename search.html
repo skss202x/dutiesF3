@@ -14,6 +14,16 @@
     body {
       font-size: 0.92rem;
     }
+    .sparkle {
+  animation: sparkle 1.5s infinite alternate;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes sparkle {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.3); }
+}
+
 
     /* ✨ Shiny text animation */
   .shine {
@@ -72,7 +82,10 @@
     <div id="results" class="flex flex-col gap-4"></div>
 
     <footer class="mt-2 text-sm text-gray-800 font-bold">
-      Updated on : 9 April 2025
+      <p id="updatedDate" class="mt-2 text-sm text-gray-800 font-bold">
+  Updated on : 9 April 2025
+</p>
+
       
       <p class="mt-2 text-sm text-gray-500 font-normal">
         Tip: Search using your unique name, remember to scroll down to see the whole list & use at your own discretion (pls tell admin not to make last minute changes 🤲). If you see incomplete data that means the main dutysheet is incomplete as well. I welcome any improvement feedbacks.
@@ -93,7 +106,13 @@
         { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-orange-300 bg-brown-50' },
         { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-yellow-300 bg-yellow-50' },
       ];
+function getUpdatedMonth() {
+  const updatedText = document.getElementById("updatedDate").innerText;
+  const monthMatch = updatedText.match(/(\d+)\s+([A-Za-z]+)\s+\d{4}/);
+  return monthMatch ? monthMatch[2].toLowerCase() : null;
+}
 
+      
       async function fetchSheet(sheetName, range) {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
         const res = await fetch(url);
@@ -110,9 +129,8 @@
         }
         return "";
       }
-
-      function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass) {
-        const card = document.createElement("div");
+      function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass, sparkle = false) {
+  const card = document.createElement("div");
         card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-all duration-200 hover:shadow-xl hover:scale-[1.02] hover:bg-white/50 cursor-pointer`;
 
         const leftItems = leftCells
@@ -166,6 +184,16 @@
                     if (leftCol >= 0) {
                       leftData.push(getMergedSafeValue(rowIndex, leftCol));
                     }
+                  }
+
+                  // 🆕 Get updated month and check if any data matches it
+  const updatedMonth = getUpdatedMonth();
+  const sparkle = [...leftData, cell]
+    .some(text => text?.toLowerCase().includes(updatedMonth));
+
+  const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color, sparkle);
+  resultsDiv.appendChild(card);
+
                   }
                   const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color);
                   resultsDiv.appendChild(card);
