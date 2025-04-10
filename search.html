@@ -97,111 +97,113 @@
       </p>
     </footer>
 
-    <script>
-      const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
-      const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
-      const sheetConfigs = [
-        { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-300 bg-purple-50' },
-        { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-300 bg-blue-50' },
-        { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-red-300 bg-red-50' },
-        { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-yellow-300 bg-yellow-50' },
-      ];
-function getUpdatedMonth() {
-  const updatedText = document.getElementById("updatedDate").innerText;
-  const monthMatch = updatedText.match(/(\d+)\s+([A-Za-z]+)\s+\d{4}/);
-  return monthMatch ? monthMatch[2].toLowerCase() : null;
-}
+<script>
+  const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
+  const sheetId = "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo";
+  const sheetConfigs = [
+    { name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-300 bg-purple-50' },
+    { name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-300 bg-blue-50' },
+    { name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-red-300 bg-red-50' },
+    { name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-yellow-300 bg-yellow-50' },
+  ];
 
-      
-      async function fetchSheet(sheetName, range) {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
-        const json = await res.json();
-        return json.values?.slice(1) || [];
+  function getUpdatedMonth() {
+    const updatedText = document.getElementById("updatedDate").innerText;
+    const monthMatch = updatedText.match(/(\d+)\s+([A-Za-z]+)\s+\d{4}/);
+    return monthMatch ? monthMatch[2].toLowerCase() : null;
+  }
+
+  async function fetchSheet(sheetName, range) {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
+    const json = await res.json();
+    return json.values?.slice(1) || [];
+  }
+
+  function getMergedSafeValue(row, colIndex) {
+    for (let r = row; r >= 0; r--) {
+      if (cachedData[r] && cachedData[r][colIndex]) {
+        return cachedData[r][colIndex];
       }
+    }
+    return "";
+  }
 
-      function getMergedSafeValue(row, colIndex) {
-        for (let r = row; r >= 0; r--) {
-          if (cachedData[r] && cachedData[r][colIndex]) {
-            return cachedData[r][colIndex];
-          }
-        }
-        return "";
+  function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass, sparkle = false) {
+    const card = document.createElement("div");
+    card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-all duration-200 hover:shadow-xl hover:scale-[1.02] hover:bg-white/50 cursor-pointer ${sparkle ? "sparkle" : ""}`;
+
+    const leftItems = leftCells
+      .reverse()
+      .map(val => `<li>🔎 ${val}</li>`)
+      .join("");
+
+    card.innerHTML = `
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
+        <div class="flex flex-col text-right">
+          <p class="text-sm text-gray-800">
+            <strong>Name:</strong> ${match}
+          </p>
+          <p class="text-xs text-gray-600 mb-1">
+            Row ${rowIndex + 2}, Column ${colIndex + 1}
+          </p>
+        </div>
+      </div>
+      <ul class="pl-4 list-disc text-sm text-gray-700">
+        ${leftItems || "<li><em>None found</em></li>"}
+      </ul>
+    `;
+    return card;
+  }
+
+  let cachedData = [];
+
+  document.getElementById("searchBtn").addEventListener("click", async () => {
+    const term = document.getElementById("searchInput").value.trim();
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    if (!term) {
+      resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter your name ⌛.</div>`;
+      return;
+    }
+
+    const lowerTerm = term.toLowerCase();
+    const updatedMonth = getUpdatedMonth();
+
+    for (const { name, range, left, color } of sheetConfigs) {
+      try {
+        cachedData = await fetchSheet(name, range);
+        cachedData.forEach((row, rowIndex) => {
+          if (!row) return;
+          row.forEach((cell, colIndex) => {
+            if (cell?.toLowerCase().includes(lowerTerm)) {
+              const leftData = [];
+              for (let i = 1; i <= left; i++) {
+                const leftCol = colIndex - i;
+                if (leftCol >= 0) {
+                  leftData.push(getMergedSafeValue(rowIndex, leftCol));
+                }
+              }
+
+              const sparkle = [...leftData, cell]
+                .some(text => text?.toLowerCase().includes(updatedMonth));
+
+              const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color, sparkle);
+              resultsDiv.appendChild(card);
+            }
+          });
+        });
+      } catch (err) {
+        console.error(err);
+        resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
       }
-      function createCard(sheetName, match, leftCells, rowIndex, colIndex, searchTerm, colorClass, sparkle = false) {
-  const card = document.createElement("div");
-        card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-all duration-200 hover:shadow-xl hover:scale-[1.02] hover:bg-white/50 cursor-pointer`;
+    }
+  });
+</script>
 
-        const leftItems = leftCells
-          .reverse()
-          .map(val => `<li>🔎 ${val}</li>`)
-          .join("");
-
-        card.innerHTML = `
-          <div class="flex justify-between items-center mb-2">
-            <h2 class="text-md font-bold text-gray-800">${sheetName}</h2>
-            <div class="flex flex-col text-right">
-              <p class="text-sm text-gray-800">
-                <strong>Name:</strong> ${match}
-              </p>
-              <p class="text-xs text-gray-600 mb-1">
-                Row ${rowIndex + 2}, Column ${colIndex + 1}
-              </p>
-            </div>
-          </div>
-          <ul class="pl-4 list-disc text-sm text-gray-700">
-            ${leftItems || "<li><em>None found</em></li>"}
-          </ul>
-        `;
-        return card;
-      }
-
-      let cachedData = [];
-
-      document.getElementById("searchBtn").addEventListener("click", async () => {
-        const term = document.getElementById("searchInput").value.trim();
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = "";
-
-        if (!term) {
-          resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter your name ⌛.</div>`;
-          return;
-        }
-
-        const lowerTerm = term.toLowerCase();
-
-        for (const { name, range, left, color } of sheetConfigs) {
-          try {
-            cachedData = await fetchSheet(name, range);
-            cachedData.forEach((row, rowIndex) => {
-              if (!row) return;
-              row.forEach((cell, colIndex) => {
-                if (cell?.toLowerCase().includes(lowerTerm)) {
-                  const leftData = [];
-                  for (let i = 1; i <= left; i++) {
-                    const leftCol = colIndex - i;
-                    if (leftCol >= 0) {
-                      leftData.push(getMergedSafeValue(rowIndex, leftCol));
-                    }
-                  }
-
-                  // 🆕 Get updated month and check if any data matches it
-  const updatedMonth = getUpdatedMonth();
-  const sparkle = [...leftData, cell]
-    .some(text => text?.toLowerCase().includes(updatedMonth));
-
-  const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color, sparkle);
-  resultsDiv.appendChild(card);
-
-    
-          } catch (err) {
-            console.error(err);
-            resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
-          }
-        }
-      });
-    </script>
   </div>
 </body>
 </html>
