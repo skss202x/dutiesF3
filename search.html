@@ -194,7 +194,7 @@ function getUpdatedMonth() {
   const card = createCard(name, cell, leftData, rowIndex, colIndex, term, color, sparkle);
   resultsDiv.appendChild(card);
 
-            });
+    
           } catch (err) {
             console.error(err);
             resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
