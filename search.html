@@ -91,10 +91,10 @@
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
 
     const sheetConfigs = [
-      { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", range: "A1:Z1000", colMatch: "any", left: 2 },
-      { sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc", name: "AS 15-4  floor markers duty ", range: "A1:Z1000", colMatch: "any", left: 2 },
-      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", range: "A1:Z1000", colMatch: 2, left: 1 },
-      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", range: "A1:Z1000", colMatch: 2, left: 1 }
+      { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", label: "Latecomers", range: "A1:Z1000", colMatch: "any", left: 2 },
+      { sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc", name: "AS 15-4  floor markers duty ", label: "Assembly", range: "A1:Z1000", colMatch: "any", left: 2 },
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", label: "Break/Lunch", range: "A1:Z1000", colMatch: 2, left: 1 },
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", label: "Break/Lunch", range: "A1:Z1000", colMatch: 2, left: 1 }
     ];
 
     async function fetchSheet(sheetId, sheetName, range) {
@@ -122,7 +122,7 @@
       if (!term) return;
 
       for (let i = 0; i < sheetConfigs.length; i++) {
-        const { sheetId, name, range, colMatch, left } = sheetConfigs[i];
+        const { sheetId, name, label, range, colMatch, left } = sheetConfigs[i];
         try {
           const data = await fetchSheet(sheetId, name, range);
           data.forEach((row, rowIndex) => {
@@ -140,7 +140,7 @@
                   }
                   const tr = document.createElement("tr");
                   tr.innerHTML = `
-                    <td class="px-4 py-2">Sheet ${i + 1}</td>
+                    <td class="px-4 py-2">${label}</td>
                     <td class="px-4 py-2 font-semibold">${cell}</td>
                     <td class="px-4 py-2">${leftData.reverse().map(d => `🔎 ${d}`).join("<br>")}</td>
                     <td class="px-4 py-2">-</td>
@@ -163,7 +163,7 @@
 
               const tr = document.createElement("tr");
               tr.innerHTML = `
-                <td class="px-4 py-2">Sheet ${i + 1}</td>
+                <td class="px-4 py-2">${label}</td>
                 <td class="px-4 py-2 font-semibold">${match}</td>
                 <td class="px-4 py-2">${leftData.map(d => `🔎 ${d}`).join("<br>")}</td>
                 <td class="px-4 py-2">${detailText}</td>
