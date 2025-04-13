@@ -87,18 +87,86 @@
   </footer>
 
   <script>
-    // You can now use JavaScript to populate this table like so:
-    /*
-    const resultsDiv = document.getElementById("results");
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td class="px-4 py-2">CAFETERIA (A)</td>
-      <td class="px-4 py-2">Reza</td>
-      <td class="px-4 py-2">🔎 Monday<br>🔎 Break Duty</td>
-      <td class="px-4 py-2 text-xs text-gray-500">Row 15, Col 6</td>
-    `;
-    resultsDiv.appendChild(row);
-    */
+    const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
+
+    const sheetConfigs = [
+      { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", range: "A1:Z1000", colMatch: "any", left: 2 },
+      { sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc", name: "AS 15-4 floor markers duty", range: "A1:Z1000", colMatch: "any", left: 2 },
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", range: "A1:Z1000", colMatch: 2, left: 1 },
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", range: "A1:Z1000", colMatch: 2, left: 1 }
+    ];
+
+    async function fetchSheet(sheetId, sheetName, range) {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
+      const json = await res.json();
+      return json.values?.slice(1) || [];
+    }
+
+    function getMergedSafeValue(data, row, colIndex) {
+      while (row >= 0) {
+        if (data[row] && data[row][colIndex]) {
+          return data[row][colIndex];
+        }
+        row--;
+      }
+      return "";
+    }
+
+    document.getElementById("searchBtn").addEventListener("click", async () => {
+      const term = document.getElementById("searchInput").value.trim().toLowerCase();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+      if (!term) return;
+
+      for (const { sheetId, name, range, colMatch, left } of sheetConfigs) {
+        try {
+          const data = await fetchSheet(sheetId, name, range);
+          data.forEach((row, rowIndex) => {
+            if (!row) return;
+
+            if (colMatch === "any") {
+              row.forEach((cell, colIndex) => {
+                if (cell?.toLowerCase().includes(term)) {
+                  const leftData = [];
+                  for (let i = 1; i <= left; i++) {
+                    const leftCol = colIndex - i;
+                    if (leftCol >= 0) {
+                      leftData.push(getMergedSafeValue(data, rowIndex, leftCol));
+                    }
+                  }
+                  const tr = document.createElement("tr");
+                  tr.innerHTML = `
+                    <td class="px-4 py-2">${name}</td>
+                    <td class="px-4 py-2 font-semibold">${cell}</td>
+                    <td class="px-4 py-2">${leftData.reverse().map(d => `🔎 ${d}`).join("<br>")}</td>
+                    <td class="px-4 py-2 text-xs text-gray-500">Row ${rowIndex + 2}, Col ${colIndex + 1}</td>
+                  `;
+                  resultsDiv.appendChild(tr);
+                }
+              });
+            } else if (row[colMatch]?.toLowerCase().includes(term)) {
+              const match = row[colMatch];
+              const leftData = [];
+              if (colMatch > 0) {
+                leftData.push(getMergedSafeValue(data, rowIndex, colMatch - 1));
+              }
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td class="px-4 py-2">${name}</td>
+                <td class="px-4 py-2 font-semibold">${match}</td>
+                <td class="px-4 py-2">${leftData.map(d => `🔎 ${d}`).join("<br>")}</td>
+                <td class="px-4 py-2 text-xs text-gray-500">Row ${rowIndex + 2}, Col ${colMatch + 1}</td>
+              `;
+              resultsDiv.appendChild(tr);
+            }
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
   </script>
 </body>
 </html>
