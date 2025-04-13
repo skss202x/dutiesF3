@@ -65,6 +65,7 @@
           <th class="px-4 py-2">Sheet</th>
           <th class="px-4 py-2">Name</th>
           <th class="px-4 py-2">Duties / Details</th>
+          <th class="px-4 py-2">Extra</th>
           <th class="px-4 py-2">Row Info</th>
         </tr>
       </thead>
@@ -120,7 +121,8 @@
       resultsDiv.innerHTML = "";
       if (!term) return;
 
-      for (const { sheetId, name, range, colMatch, left } of sheetConfigs) {
+      for (let i = 0; i < sheetConfigs.length; i++) {
+        const { sheetId, name, range, colMatch, left } = sheetConfigs[i];
         try {
           const data = await fetchSheet(sheetId, name, range);
           data.forEach((row, rowIndex) => {
@@ -130,17 +132,18 @@
               row.forEach((cell, colIndex) => {
                 if (cell?.toLowerCase().includes(term)) {
                   const leftData = [];
-                  for (let i = 1; i <= left; i++) {
-                    const leftCol = colIndex - i;
+                  for (let j = 1; j <= left; j++) {
+                    const leftCol = colIndex - j;
                     if (leftCol >= 0) {
                       leftData.push(getMergedSafeValue(data, rowIndex, leftCol));
                     }
                   }
                   const tr = document.createElement("tr");
                   tr.innerHTML = `
-                    <td class="px-4 py-2">${name}</td>
+                    <td class="px-4 py-2">Sheet ${i + 1}</td>
                     <td class="px-4 py-2 font-semibold">${cell}</td>
                     <td class="px-4 py-2">${leftData.reverse().map(d => `🔎 ${d}`).join("<br>")}</td>
+                    <td class="px-4 py-2">-</td>
                     <td class="px-4 py-2 text-xs text-gray-500">Row ${rowIndex + 2}, Col ${colIndex + 1}</td>
                   `;
                   resultsDiv.appendChild(tr);
@@ -152,11 +155,18 @@
               if (colMatch > 0) {
                 leftData.push(getMergedSafeValue(data, rowIndex, colMatch - 1));
               }
+
+              let detailText = "-";
+              if (sheetId === "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc") {
+                detailText = rowIndex + 2 <= 34 ? "Lunch Duty" : "Break Duty";
+              }
+
               const tr = document.createElement("tr");
               tr.innerHTML = `
-                <td class="px-4 py-2">${name}</td>
+                <td class="px-4 py-2">Sheet ${i + 1}</td>
                 <td class="px-4 py-2 font-semibold">${match}</td>
                 <td class="px-4 py-2">${leftData.map(d => `🔎 ${d}`).join("<br>")}</td>
+                <td class="px-4 py-2">${detailText}</td>
                 <td class="px-4 py-2 text-xs text-gray-500">Row ${rowIndex + 2}, Col ${colMatch + 1}</td>
               `;
               resultsDiv.appendChild(tr);
