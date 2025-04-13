@@ -153,24 +153,22 @@
                 let duty = "-";
                 let details = [];
               
-                // Custom rule for specific sheetId and column position
+                // Get base duty value
+if (dutyOffset !== undefined) {
+  duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
+} else if (typeof left === 'number') {
+  duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+}
+
+// Append extra duty tags if matched column is E or J of the specified sheet
 if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
   if (colIndex === 4) {
-    duty = "Break Duty";
+    duty += " Break Duty";
   } else if (colIndex === 9) {
-    duty = "Lunch Duty";
-  } else if (dutyOffset !== undefined) {
-    duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
-  } else if (typeof left === 'number') {
-    duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
-  }
-} else {
-  if (dutyOffset !== undefined) {
-    duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
-  } else if (typeof left === 'number') {
-    duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+    duty += " Lunch Duty";
   }
 }
+
 
                 if (Array.isArray(detailOffsets)) {
                   details = detailOffsets.map(offset => getMergedSafeValue(data, rowIndex, colIndex + offset));
