@@ -45,7 +45,7 @@
   <div class="container">
     <h1 class="text-xl font-bold mb-4 text-pink-600 drop-shadow text-center">
       🔎 Prefect Duties Search (Cafe, Assembly, Latecomers) 
-      <span class="text-lg text-gray-600 font-normal"> (⛔ Not for Probies)</span>
+      <span class="text-lg text-gray-600 font-normal"> (⛘ Not for Probies)</span>
     </h1>
 
     <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full items-center justify-center">
@@ -55,305 +55,50 @@
         Search
       </button>
     </div>
-
-    <div id="results" class="flex flex-col gap-4"></div>
-
-    <footer class="mt-2 text-sm text-gray-800 font-bold">
-      <p id="updatedDate" class="mt-2 text-sm text-gray-800 font-bold">
-        Updated on : 13 April 2025
-      </p>
-      <p class="mt-2 text-sm text-gray-500 font-normal">
-        Note: Search using your unique name (e.g. Aki Ai, reza, or oznur instead of eliza because there is a probie Elizabeth). The duties in the current month will ✨sparkle✨, Use at your own discretion. If you see incomplete data that means the main dutysheet is incomplete as well. Suggestions always welcome (and I won’t say no to free coffee).
-      </p>
-      <p class="mt-7 text-center text-sm font-semibold shine">
-        an initiative by Tan Sebastian Poe Ryu© 
-      </p>
-    </footer>
-
-
-    <div class="w-full max-w-4xl mx-auto mt-10">
-  <!-- Accordion Toggle -->
-  <button
-    onclick="document.getElementById('sheetAccordion').classList.toggle('hidden')"
-    class="w-full text-left px-4 py-3 font-semibold text-purple-700 bg-purple-100 border border-purple-300 rounded-lg shadow hover:bg-purple-200 transition"
-  >
-    📋 Show Sheet Sources
-  </button>
-
-  <!-- Accordion Content -->
-  <div id="sheetAccordion" class="hidden mt-3 bg-white border border-gray-300 rounded-lg shadow">
-    <h2 class="text-lg font-semibold text-center text-purple-700 py-4 border-b border-gray-200 bg-purple-50 rounded-t-lg">
-      Sheets Included in This Dashboard
-    </h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-sm text-left text-gray-700">
-        <thead class="bg-gray-100 text-gray-700 uppercase text-xs border-b border-gray-300">
-          <tr>
-            <th class="px-4 py-3 w-1/4">Sheet ID</th>
-            <th class="px-4 py-3 w-1/4">Sheet Name(s)</th>
-            <th class="px-4 py-3">Instructions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr>
-            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
-              1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo
-            </td>
-            <td class="px-4 py-3">
-              <ul class="list-disc list-inside space-y-1">
-                <li>ONSITE - LATECOMERS</li>
-                <li>ONSITE - ASSEMBLY</li>
-                <li>ONSITE - CAFETERIA (A)</li>
-                <li>ONSITE - CAFETERIA (B)</li>
-              </ul>
-            </td>
-            <td class="px-4 py-3">
-              Match by name in any column.<br>
-              Pull up to 5 or 3 left cells.<br>
-              CAFETERIA: “Break Duty” (col E), “Lunch Duty” (col F).
-            </td>
-          </tr>
-          <tr>
-            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
-              11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA
-            </td>
-            <td class="px-4 py-3">
-              <ul class="list-disc list-inside">
-                <li>APR 25</li>
-              </ul>
-            </td>
-            <td class="px-4 py-3">
-              Match anywhere in sheet.<br>
-              Display match + 2 cells to the left.
-            </td>
-          </tr>
-          <tr>
-            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
-              1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc
-            </td>
-            <td class="px-4 py-3">
-              <ul class="list-disc list-inside">
-                <li>AS 15-4 floor markers duty</li>
-              </ul>
-            </td>
-            <td class="px-4 py-3">
-              Match anywhere in sheet.<br>
-              Display match + 2 cells to the left.
-            </td>
-          </tr>
-          <tr>
-            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
-              1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc
-            </td>
-            <td class="px-4 py-3">
-              <ul class="list-disc list-inside">
-                <li>LOWER SEC APR</li>
-                <li>UPPER SEC APR</li>
-              </ul>
-            </td>
-            <td class="px-4 py-3">
-              Match in <strong>Column C</strong> only.<br>
-              Display match + 1 cell to the left.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
-</div>
 
-<!-- [Keep your <head> and styles the same] -->
-<!-- This is your updated <script> section inside the page -->
-<script>
-  const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
-  
-  const sheetConfigs = [
-    { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - LATECOMERS", range: "A1:N1000", left: 5, color: 'border-purple-300 bg-purple-50' },
-    { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - ASSEMBLY", range: "A1:N1000", left: 5, color: 'border-blue-300 bg-blue-50' },
-    { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - CAFETERIA (A)", range: "A1:J1000", left: 3, color: 'border-red-300 bg-red-50' },
-    { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - CAFETERIA (B)", range: "A1:J1000", left: 3, color: 'border-yellow-300 bg-yellow-50' },
-  ];
+  <!-- Dynamic Results Table -->
+  <div class="w-full max-w-6xl mx-auto mt-6">
+    <table class="min-w-full text-sm text-left text-gray-800 shadow-md rounded-lg overflow-hidden">
+      <thead class="bg-purple-100 text-purple-700 uppercase text-xs">
+        <tr>
+          <th class="px-4 py-2">Sheet</th>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Duties / Details</th>
+          <th class="px-4 py-2">Row Info</th>
+        </tr>
+      </thead>
+      <tbody id="results" class="bg-white divide-y divide-gray-200">
+        <!-- JS will populate this -->
+      </tbody>
+    </table>
+  </div>
 
-  const extraSheets = [
-    {
-      sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA",
-      name: "APR 25",
-      range: "A1:Z1000",
-      color: "border-green-300 bg-green-50",
-      colMatch: "any", left: 2
-    },
-    {
-      sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc",
-      name: "AS 15-4 floor markers duty",
-      range: "A1:Z1000",
-      color: "border-amber-300 bg-amber-50",
-      colMatch: "any", left: 2
-    },
-    {
-      sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc",
-      name: "LOWER SEC APR",
-      range: "A1:Z1000",
-      color: "border-blue-300 bg-blue-50",
-      colMatch: 2, left: 1
-    },
-    {
-      sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc",
-      name: "UPPER SEC APR",
-      range: "A1:Z1000",
-      color: "border-pink-300 bg-pink-50",
-      colMatch: 2, left: 1
-    }
-  ];
+  <footer class="mt-10 text-sm text-gray-800 font-bold">
+    <p id="updatedDate" class="mt-2 text-sm text-gray-800 font-bold">
+      Updated on : 13 April 2025
+    </p>
+    <p class="mt-2 text-sm text-gray-500 font-normal">
+      Note: Search using your unique name (e.g. Aki Ai, reza, or oznur instead of eliza because there is a probie Elizabeth). The duties in the current month will ✨sparkle✨, Use at your own discretion. If you see incomplete data that means the main dutysheet is incomplete as well. Suggestions always welcome (and I won’t say no to free coffee).
+    </p>
+    <p class="mt-7 text-center text-sm font-semibold shine">
+      an initiative by Tan Sebastian Poe Ryu© 
+    </p>
+  </footer>
 
-  function getUpdatedMonth() {
-    const updatedText = document.getElementById("updatedDate").innerText;
-    const match = updatedText.match(/(\d+)\s+([A-Za-z]+)\s+\d{4}/);
-    return match ? match[2].toLowerCase() : null;
-  }
-
-  function containsMonth(text, updatedMonth) {
-    if (!text) return false;
-    const lower = text.toLowerCase();
-    if (lower.includes(updatedMonth)) return true;
-    const monthMap = {
-      january: '01', february: '02', march: '03', april: '04',
-      may: '05', june: '06', july: '07', august: '08',
-      september: '09', october: '10', november: '11', december: '12'
-    };
-    const monthNum = monthMap[updatedMonth];
-    if (!monthNum) return false;
-    return new RegExp(`[-/]0?${parseInt(monthNum)}[-/]|[-/]${monthNum}[-/]`).test(lower);
-  }
-
-  async function fetchSheet(sheetId, sheetName, range) {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName + '!' + range)}?key=${apiKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
-    const json = await res.json();
-    return json.values?.slice(1) || [];
-  }
-
-  function getMergedSafeValue(data, row, colIndex) {
-    for (let r = row; r >= 0; r--) {
-      if (data[r] && data[r][colIndex]) {
-        return data[r][colIndex];
-      }
-    }
-    return "";
-  }
-
-  function createCard(sheetName, match, leftCells, rowIndex, colIndex, colorClass, sparkle = false, dutyLabel = "") {
-    const card = document.createElement("div");
-    card.className = `p-4 rounded shadow border-l-8 ${colorClass} transition-all duration-200 hover:shadow-xl hover:scale-[1.02] hover:bg-white/50 cursor-pointer ${sparkle ? "sparkle" : ""}`;
-    const leftItems = leftCells.reverse().map(val => `<li>🔎 ${val}</li>`).join("");
-
-    card.innerHTML = `
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-md font-bold text-gray-800">${sheetName} ${sparkle ? "✨" : ""}</h2>
-        <div class="flex flex-col text-right">
-          <p class="text-sm text-gray-800"><strong>Name:</strong> ${match}</p>
-          ${dutyLabel ? `<p class="text-sm text-pink-600 font-semibold">${dutyLabel}</p>` : ""}
-          <p class="text-xs text-gray-200 mb-1">Row ${rowIndex + 2}, Column ${colIndex + 1}</p>
-        </div>
-      </div>
-      <ul class="pl-4 list-disc text-sm text-gray-700">
-        ${leftItems || "<li><em>None found</em></li>"}
-      </ul>
-    `;
-    return card;
-  }
-
-  document.getElementById("searchBtn").addEventListener("click", async () => {
-    const term = document.getElementById("searchInput").value.trim();
+  <script>
+    // You can now use JavaScript to populate this table like so:
+    /*
     const resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-
-    if (!term) {
-      resultsDiv.innerHTML = `<div class="bg-yellow-100 text-yellow-700 p-3 rounded">Please enter your name ⌛.</div>`;
-      return;
-    }
-
-    const lowerTerm = term.toLowerCase();
-    const updatedMonth = getUpdatedMonth();
-
-    for (const { sheetId, name, range, left, color } of sheetConfigs) {
-      try {
-        const cachedData = await fetchSheet(sheetId, name, range);
-        cachedData.forEach((row, rowIndex) => {
-          if (!row) return;
-          row.forEach((cell, colIndex) => {
-            if (cell?.toLowerCase().includes(lowerTerm)) {
-              const leftData = [];
-              for (let i = 1; i <= left; i++) {
-                const leftCol = colIndex - i;
-                if (leftCol >= 0) {
-                  leftData.push(getMergedSafeValue(cachedData, rowIndex, leftCol));
-                }
-              }
-
-              let dutyLabel = "";
-              if (name.includes("CAFETERIA")) {
-                if (colIndex === 4) dutyLabel = "Break Duty";
-                else if (colIndex === 5) dutyLabel = "Lunch Duty";
-              }
-
-              const sparkle = [...leftData, cell].some(text => containsMonth(text, updatedMonth));
-              const card = createCard(name, cell, leftData, rowIndex, colIndex, color, sparkle, dutyLabel);
-              resultsDiv.appendChild(card);
-            }
-          });
-        });
-      } catch (err) {
-        console.error(err);
-        resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
-      }
-    }
-
-    // Extra Sheets
-    for (const { sheetId, name, range, color, colMatch, left } of extraSheets) {
-      try {
-        const data = await fetchSheet(sheetId, name, range);
-        data.forEach((row, rowIndex) => {
-          if (!row) return;
-
-          if (colMatch === "any") {
-            row.forEach((cell, colIndex) => {
-              if (cell?.toLowerCase().includes(lowerTerm)) {
-                const leftData = [];
-                for (let i = 1; i <= left; i++) {
-                  const leftCol = colIndex - i;
-                  if (leftCol >= 0) {
-                    leftData.push(getMergedSafeValue(data, rowIndex, leftCol));
-                  }
-                }
-                const card = createCard(name, cell, leftData, rowIndex, colIndex, color);
-                resultsDiv.appendChild(card);
-              }
-            });
-          } else if (row[colMatch]?.toLowerCase().includes(lowerTerm)) {
-            const match = row[colMatch];
-            const leftData = [];
-            if (colMatch > 0) {
-              leftData.push(getMergedSafeValue(data, rowIndex, colMatch - 1));
-            }
-            const card = createCard(name, match, leftData, rowIndex, colMatch, color);
-            resultsDiv.appendChild(card);
-          }
-        });
-      } catch (err) {
-        console.error(err);
-        resultsDiv.innerHTML += `<div class="bg-red-100 text-red-700 p-3 rounded">Error loading ${name}</div>`;
-      }
-    }
-  });
-</script>
-
-
-
-
-
-
-    
-  </div>
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="px-4 py-2">CAFETERIA (A)</td>
+      <td class="px-4 py-2">Reza</td>
+      <td class="px-4 py-2">🔎 Monday<br>🔎 Break Duty</td>
+      <td class="px-4 py-2 text-xs text-gray-500">Row 15, Col 6</td>
+    `;
+    resultsDiv.appendChild(row);
+    */
+  </script>
 </body>
 </html>
