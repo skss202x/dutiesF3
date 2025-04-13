@@ -40,7 +40,7 @@
   <div class="container">
     <h1 class="text-xl font-bold mb-4 text-pink-600 drop-shadow text-center">
       🔎 Prefect Duties Search (Cafe, Assembly, Latecomers) 
-      <span class="text-lg text-gray-600 font-normal"> (Not for Probies)</span>
+      <span class="text-lg text-gray-600 font-normal"> (⛘ Not for Probies)</span>
     </h1>
     <div class="mb-6 flex flex-col sm:flex-row gap-2 w-full items-center justify-center">
       <input id="searchInput" type="text" placeholder="Your name..."
@@ -74,7 +74,7 @@
   <script>
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetConfigs = [
-      { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", label: "Latecomers", range: "A1:Z1000", colMatch: "any", left: 2 },
+      { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", label: "Latecomers", range: "A7:Z13", colMatch: "any", left: 2 },
       { sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc", name: "AS 15-4  floor markers duty ", label: "Assembly", range: "A1:Z1000", colMatch: "any", left: 2 },
       { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", label: "Break/Lunch", range: "A1:C1000", colMatch: 1 },
       { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", label: "Break/Lunch", range: "A1:C1000", colMatch: 1 },
@@ -89,7 +89,7 @@
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Failed to load ${sheetName}`);
       const json = await res.json();
-      return json.values?.slice(1) || [];
+      return json.values || [];
     }
 
     function getMergedSafeValue(data, row, colIndex) {
