@@ -69,6 +69,99 @@
         an initiative by Tan Sebastian Poe Ryu© 
       </p>
     </footer>
+
+
+    <div class="w-full max-w-4xl mx-auto mt-10">
+  <!-- Accordion Toggle -->
+  <button
+    onclick="document.getElementById('sheetAccordion').classList.toggle('hidden')"
+    class="w-full text-left px-4 py-3 font-semibold text-purple-700 bg-purple-100 border border-purple-300 rounded-lg shadow hover:bg-purple-200 transition"
+  >
+    📋 Show Sheet Sources
+  </button>
+
+  <!-- Accordion Content -->
+  <div id="sheetAccordion" class="hidden mt-3 bg-white border border-gray-300 rounded-lg shadow">
+    <h2 class="text-lg font-semibold text-center text-purple-700 py-4 border-b border-gray-200 bg-purple-50 rounded-t-lg">
+      Sheets Included in This Dashboard
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-left text-gray-700">
+        <thead class="bg-gray-100 text-gray-700 uppercase text-xs border-b border-gray-300">
+          <tr>
+            <th class="px-4 py-3 w-1/4">Sheet ID</th>
+            <th class="px-4 py-3 w-1/4">Sheet Name(s)</th>
+            <th class="px-4 py-3">Instructions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
+              1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo
+            </td>
+            <td class="px-4 py-3">
+              <ul class="list-disc list-inside space-y-1">
+                <li>ONSITE - LATECOMERS</li>
+                <li>ONSITE - ASSEMBLY</li>
+                <li>ONSITE - CAFETERIA (A)</li>
+                <li>ONSITE - CAFETERIA (B)</li>
+              </ul>
+            </td>
+            <td class="px-4 py-3">
+              Match by name in any column.<br>
+              Pull up to 5 or 3 left cells.<br>
+              CAFETERIA: “Break Duty” (col E), “Lunch Duty” (col F).
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
+              11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA
+            </td>
+            <td class="px-4 py-3">
+              <ul class="list-disc list-inside">
+                <li>APR 25</li>
+              </ul>
+            </td>
+            <td class="px-4 py-3">
+              Match anywhere in sheet.<br>
+              Display match + 2 cells to the left.
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
+              1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc
+            </td>
+            <td class="px-4 py-3">
+              <ul class="list-disc list-inside">
+                <li>AS 15-4 floor markers duty</li>
+              </ul>
+            </td>
+            <td class="px-4 py-3">
+              Match anywhere in sheet.<br>
+              Display match + 2 cells to the left.
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-xs break-all font-mono text-gray-600">
+              1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc
+            </td>
+            <td class="px-4 py-3">
+              <ul class="list-disc list-inside">
+                <li>LOWER SEC APR</li>
+                <li>UPPER SEC APR</li>
+              </ul>
+            </td>
+            <td class="px-4 py-3">
+              Match in <strong>Column C</strong> only.<br>
+              Display match + 1 cell to the left.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- [Keep your <head> and styles the same] -->
 <!-- This is your updated <script> section inside the page -->
 <script>
