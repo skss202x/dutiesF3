@@ -152,11 +152,26 @@
               if (cell?.toLowerCase().includes(term)) {
                 let duty = "-";
                 let details = [];
-                if (dutyOffset !== undefined) {
-                  duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
-                } else if (typeof left === 'number') {
-                  duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
-                }
+              
+                // Custom rule for specific sheetId and column position
+if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
+  if (colIndex === 4) {
+    duty = "Break Duty";
+  } else if (colIndex === 9) {
+    duty = "Lunch Duty";
+  } else if (dutyOffset !== undefined) {
+    duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
+  } else if (typeof left === 'number') {
+    duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+  }
+} else {
+  if (dutyOffset !== undefined) {
+    duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
+  } else if (typeof left === 'number') {
+    duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+  }
+}
+
                 if (Array.isArray(detailOffsets)) {
                   details = detailOffsets.map(offset => getMergedSafeValue(data, rowIndex, colIndex + offset));
                 } else if (typeof left === 'number') {
