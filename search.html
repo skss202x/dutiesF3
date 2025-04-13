@@ -34,6 +34,46 @@
       0% { background-position: 200% center; }
       100% { background-position: -200% center; }
     }
+
+    /* Sticky table header */
+    thead th {
+      position: sticky;
+      top: 0;
+      background-color: #f3e8ff; /* matches bg-purple-100 */
+      z-index: 10;
+    }
+
+    /* Floating search button */
+    .floating-search {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #a855f7, #3b82f6);
+      color: white;
+      padding: 14px 16px;
+      border-radius: 9999px;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 0 12px #fff;
+      animation: pulse-glow 2s infinite ease-in-out;
+      z-index: 50;
+      cursor: pointer;
+    }
+
+    @keyframes pulse-glow {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 12px #fff, 0 0 6px #f0f;
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px #fff, 0 0 10px #f0f;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 12px #fff, 0 0 6px #f0f;
+      }
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-pink-100 via-blue-100 to-purple-100 min-h-screen flex flex-col items-center p-4 pt-6">
@@ -50,8 +90,9 @@
       </button>
     </div>
   </div>
-  <div class="w-full max-w-6xl mx-auto mt-6">
-    <table class="min-w-full text-sm text-left text-gray-800 shadow-md rounded-lg overflow-hidden">
+
+  <div class="w-full overflow-x-auto px-2 mt-6">
+    <table class="min-w-full text-sm text-left text-gray-800 shadow-md rounded-lg border border-gray-300 bg-white">
       <thead class="bg-purple-100 text-purple-700 uppercase text-xs">
         <tr>
           <th class="px-4 py-2">Sheet</th>
@@ -61,20 +102,28 @@
           <th class="px-4 py-2">Row Info</th>
         </tr>
       </thead>
-      <tbody id="results" class="bg-white divide-y divide-gray-200"></tbody>
+      <tbody id="results" class="divide-y divide-gray-200"></tbody>
     </table>
   </div>
-  <footer class="mt-10 text-sm text-gray-800 font-bold">
-    <p id="updatedDate" class="mt-2 text-sm text-gray-800 font-bold">Updated on : 13 April 2025. Duties shown are for this current week unless stated otherwise</p>
+
+  <footer class="mt-10 text-sm text-gray-800 font-bold px-4 text-center">
+    <p id="updatedDate" class="mt-2">Updated on : 13 April 2025. Duties shown are for this current week unless stated otherwise</p>
     <p class="mt-2 text-sm text-gray-500 font-normal">
-      Note: Search using your unique name (e.g. Aki Ai, reza, or oznur instead of eliza because there is a probie Elizabeth). Currently the Only Assembly floor markers duties due to formatting reasons. Harap Maaf. Data is pulled from <span style="color:blue; font-weight:bold;"><a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0202451_student_srikdu_edu_my/EbwbJ-Ko4ZJJjcUqZCfhduIBwq0dFib7FBZydV0gRIE9ag?e=PeUiDW" target="_blank" rel="noopener noreferrer">Latecomers Duty Sheet</a>
-,<a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0171284_student_srikdu_edu_my/EcXelRiJ3qZKhxTF53EQfDcBlCgykJZnlPq9PDdHZk267Q?e=sO9VYz" target="_blank" rel="noopener noreferrer">ASSEMBLY DUTY SHEET</a>
- ,<a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EUTa8clmRqJFpp2dUwmepiYB6ZYLkp5SunE5JQ4z1zvWJg?e=OBzRny" target="_blank" rel="noopener noreferrer">BREAK & LUNCH DUTY LIST APRIL 2025</a>
-, and <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EQmKLO0fHJdLhq8rMtduIPoB4yS7pV_JtUEF2Oe5Zj7AEg?e=BNT18P" target="_blank" rel="noopener noreferrer">PROBATIONARY PREFECTS DUTY SHEET 2025</a></span>
-. Use at your own discretion. Suggestions are always welcomed (and I won’t say no to free coffee).
+      Note: Search using your unique name (e.g. Aki Ai, reza, or oznur instead of eliza because there is a probie Elizabeth). Currently the Only Assembly floor markers duties due to formatting reasons. Harap Maaf. Data is pulled from 
+      <span style="color:blue; font-weight:bold;">
+        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0202451_student_srikdu_edu_my/EbwbJ-Ko4ZJJjcUqZCfhduIBwq0dFib7FBZydV0gRIE9ag?e=PeUiDW" target="_blank" rel="noopener noreferrer">Latecomers Duty Sheet</a>,
+        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0171284_student_srikdu_edu_my/EcXelRiJ3qZKhxTF53EQfDcBlCgykJZnlPq9PDdHZk267Q?e=sO9VYz" target="_blank" rel="noopener noreferrer">ASSEMBLY DUTY SHEET</a>,
+        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EUTa8clmRqJFpp2dUwmepiYB6ZYLkp5SunE5JQ4z1zvWJg?e=OBzRny" target="_blank" rel="noopener noreferrer">BREAK & LUNCH DUTY LIST APRIL 2025</a>,
+        and <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EQmKLO0fHJdLhq8rMtduIPoB4yS7pV_JtUEF2Oe5Zj7AEg?e=BNT18P" target="_blank" rel="noopener noreferrer">PROBATIONARY PREFECTS DUTY SHEET 2025</a>
+      </span>.
+      Use at your own discretion. Suggestions are always welcomed (and I won’t say no to free coffee).
     </p>
     <p class="mt-7 text-center text-sm font-semibold shine">an initiative by Tan Sebastian Poe Ryu©</p>
   </footer>
+
+  <!-- Floating Gleaming Search Button -->
+  <button id="floatingSearch" class="floating-search">🔍</button>
+
   <script>
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetConfigs = [
@@ -136,11 +185,11 @@
                 }
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                  <td class="px-4 py-2">${label}</td>
-                  <td class="px-4 py-2 font-semibold">${cell}</td>
-                  <td class="px-4 py-2">🔎 ${duty}</td>
-                  <td class="px-4 py-2">${details.map(d => `🔎 ${d}`).join("<br>")}</td>
-                  <td class="px-4 py-2 text-xs text-gray-500">Row ${rowIndex + 2}, Col ${colIndex + 1}</td>
+                  <td class="px-4 py-2 break-words max-w-[120px]">${label}</td>
+                  <td class="px-4 py-2 font-semibold break-words max-w-[160px]">${cell}</td>
+                  <td class="px-4 py-2 break-words max-w-[160px]">🔎 ${duty}</td>
+                  <td class="px-4 py-2 break-words max-w-[200px]">${details.map(d => `🔎 ${d}`).join("<br>")}</td>
+                  <td class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">Row ${rowIndex + 2}, Col ${colIndex + 1}</td>
                 `;
                 resultsDiv.appendChild(tr);
               }
@@ -150,6 +199,11 @@
           console.error(`Failed to load data from ${name}`, err);
         }
       }
+    });
+
+    // Trigger floating search button to act like normal search
+    document.getElementById("floatingSearch").addEventListener("click", () => {
+      document.getElementById("searchBtn").click();
     });
   </script>
 </body>
