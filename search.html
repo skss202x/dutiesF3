@@ -35,28 +35,17 @@
       100% { background-position: -200% center; }
     }
 
-    /* Sticky table header */
     thead th {
       position: sticky;
       top: 0;
-      background-color: #f3e8ff; /* matches bg-purple-100 */
+      background-color: #f3e8ff;
       z-index: 10;
     }
 
-   
     @keyframes pulse-glow {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 12px #fff, 0 0 6px #f0f;
-      }
-      50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 20px #fff, 0 0 10px #f0f;
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 12px #fff, 0 0 6px #f0f;
-      }
+      0% { transform: scale(1); box-shadow: 0 0 12px #fff, 0 0 6px #f0f; }
+      50% { transform: scale(1.05); box-shadow: 0 0 20px #fff, 0 0 10px #f0f; }
+      100% { transform: scale(1); box-shadow: 0 0 12px #fff, 0 0 6px #f0f; }
     }
   </style>
 </head>
@@ -105,15 +94,13 @@
     <p class="mt-7 text-center text-sm font-semibold shine">an initiative by Tan Sebastian Poe Ryu©</p>
   </footer>
 
-
-
   <script>
     const apiKey = "AIzaSyBsdyMrJW3RmU7hyYoHh6EpoC_cynXs_7c";
     const sheetConfigs = [
       { sheetId: "11pxAig2ID-c8vigH-5ADpOeshg8GkirngYnAt07iBSA", name: "APR 25", label: "Latecomers", range: "A7:Z13", colMatch: "any", left: 2 },
       { sheetId: "1mMXUsCn9_TIsB8BXHreUiAsy_N0B8tDsiCkKmcLEcJc", name: "AS 15-4  floor markers duty ", label: "Assembly", range: "A1:Z1000", colMatch: "any", left: 2 },
-      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", label: "Break/Lunch", range: "B1:C1000", colMatch: 1, dutyOffset: -1},
-      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", label: "Break/Lunch", range: "A1:C1000", colMatch: 1, dutyOffset: -1},
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "LOWER SEC APR", label: "Break/Lunch", range: "B1:C1000", colMatch: 1, dutyOffset: -1 },
+      { sheetId: "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc", name: "UPPER SEC APR", label: "Break/Lunch", range: "A1:C1000", colMatch: 1, dutyOffset: -1 },
       { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - CAFETERIA (A)", label: "Break/Lunch & Probies A", range: "A1:Z1000", colMatch: "any", dutyOffset: -1, detailOffsets: [-2, -3] },
       { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - CAFETERIA (B)", label: "Break/Lunch & Probies B", range: "A1:Z1000", colMatch: "any", dutyOffset: -1, detailOffsets: [-2, -3] },
       { sheetId: "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo", name: "ONSITE - ASSEMBLY", label: "Assembly & Probies", range: "A1:Z1000", colMatch: "any", dutyOffset: -1, detailOffsets: [3] },
@@ -146,29 +133,33 @@
         const { sheetId, name, label, range, colMatch, dutyOffset, detailOffsets, left } = config;
         try {
           const data = await fetchSheet(sheetId, name, range);
+
+          let extraDetails = [];
+
+          // Special fetch for LOWER/UPPER SEC APR
+          if (sheetId === "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc" &&
+             (name === "LOWER SEC APR" || name === "UPPER SEC APR")) {
+            const secDetails = await fetchSheet(sheetId, name, "B9:C11");
+            extraDetails = secDetails.flat().map(d => `🔎 ${d}`);
+          }
+
           data.forEach((row, rowIndex) => {
             if (!row) return;
             row.forEach((cell, colIndex) => {
               if (cell?.toLowerCase().includes(term)) {
                 let duty = "-";
                 let details = [];
-              
-                // Get base duty value
-if (dutyOffset !== undefined) {
-  duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
-} else if (typeof left === 'number') {
-  duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
-}
 
-// Append extra duty tags if matched column is E or J of the specified sheet
-if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
-  if (colIndex === 4) {
-    duty += " Break Duty";
-  } else if (colIndex === 9) {
-    duty += " Lunch Duty";
-  }
-}
+                if (dutyOffset !== undefined) {
+                  duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
+                } else if (typeof left === 'number') {
+                  duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+                }
 
+                if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
+                  if (colIndex === 4) duty += " Break Duty";
+                  else if (colIndex === 9) duty += " Lunch Duty";
+                }
 
                 if (Array.isArray(detailOffsets)) {
                   details = detailOffsets.map(offset => getMergedSafeValue(data, rowIndex, colIndex + offset));
@@ -179,12 +170,16 @@ if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
                     if (col >= 0) details.push(getMergedSafeValue(data, rowIndex, col));
                   }
                 }
+
+                details = details.map(d => `🔎 ${d}`);
+                if (extraDetails.length) details.push(...extraDetails);
+
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                   <td class="px-4 py-2 break-words max-w-[120px]">${label}</td>
                   <td class="px-4 py-2 font-semibold break-words max-w-[160px]">${cell}</td>
                   <td class="px-4 py-2 break-words max-w-[160px]">🔎 ${duty}</td>
-                  <td class="px-4 py-2 break-words max-w-[200px]">${details.map(d => `🔎 ${d}`).join("<br>")}</td>
+                  <td class="px-4 py-2 break-words max-w-[200px]">${details.join("<br>")}</td>
                   <td class="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">Row ${rowIndex + 2}, Col ${colIndex + 1}</td>
                 `;
                 resultsDiv.appendChild(tr);
@@ -197,8 +192,7 @@ if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
       }
     });
 
-    // Trigger floating search button to act like normal search
-    document.getElementById("floatingSearch").addEventListener("click", () => {
+    document.getElementById("floatingSearch")?.addEventListener("click", () => {
       document.getElementById("searchBtn").click();
     });
   </script>
