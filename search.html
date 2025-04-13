@@ -1,3 +1,4 @@
+<!-- FULL CODE BEGIN -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,10 +85,10 @@
     <p class="mt-2 text-sm text-gray-500 font-normal">
       Note: Search using your unique name (e.g. Aki Ai, reza, or oznur instead of eliza because there is a probie Elizabeth). Currently the Only Assembly floor markers duties due to formatting reasons. Harap Maaf. Data is pulled from 
       <span style="color:blue; font-weight:bold;">
-        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0202451_student_srikdu_edu_my/EbwbJ-Ko4ZJJjcUqZCfhduIBwq0dFib7FBZydV0gRIE9ag?e=PeUiDW" target="_blank" rel="noopener noreferrer">Latecomers Duty Sheet</a>,
-        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0171284_student_srikdu_edu_my/EcXelRiJ3qZKhxTF53EQfDcBlCgykJZnlPq9PDdHZk267Q?e=sO9VYz" target="_blank" rel="noopener noreferrer">ASSEMBLY DUTY SHEET</a>,
-        <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EUTa8clmRqJFpp2dUwmepiYB6ZYLkp5SunE5JQ4z1zvWJg?e=OBzRny" target="_blank" rel="noopener noreferrer">BREAK & LUNCH DUTY LIST APRIL 2025</a>,
-        and <a href="https://srikdu-my.sharepoint.com/:x:/g/personal/0203394_student_srikdu_edu_my/EQmKLO0fHJdLhq8rMtduIPoB4yS7pV_JtUEF2Oe5Zj7AEg?e=BNT18P" target="_blank" rel="noopener noreferrer">PROBATIONARY PREFECTS DUTY SHEET 2025</a>
+        <a href="#" target="_blank" rel="noopener noreferrer">Latecomers Duty Sheet</a>,
+        <a href="#" target="_blank" rel="noopener noreferrer">ASSEMBLY DUTY SHEET</a>,
+        <a href="#" target="_blank" rel="noopener noreferrer">BREAK & LUNCH DUTY LIST APRIL 2025</a>,
+        and <a href="#" target="_blank" rel="noopener noreferrer">PROBATIONARY PREFECTS DUTY SHEET 2025</a>
       </span>.
       Use at your own discretion. Suggestions are always welcomed (and I won’t say no to free coffee).
     </p>
@@ -135,10 +136,7 @@
           const data = await fetchSheet(sheetId, name, range);
 
           let extraDetails = [];
-
-          // Special fetch for LOWER/UPPER SEC APR
-          if (sheetId === "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc" &&
-             (name === "LOWER SEC APR" || name === "UPPER SEC APR")) {
+          if (sheetId === "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc" && (name === "LOWER SEC APR" || name === "UPPER SEC APR")) {
             const secDetails = await fetchSheet(sheetId, name, "B9:C11");
             extraDetails = secDetails.flat().map(d => `🔎 ${d}`);
           }
@@ -154,6 +152,11 @@
                   duty = getMergedSafeValue(data, rowIndex, colIndex + dutyOffset);
                 } else if (typeof left === 'number') {
                   duty = getMergedSafeValue(data, rowIndex, colIndex - 1);
+                }
+
+                if (sheetId === "1UkNYiSuW_hNHcCxlssbUstyrhUBRLePJVCgOYwYmpVc") {
+                  if (rowIndex + 1 >= 16 && rowIndex + 1 <= 33) duty += " Break Duty";
+                  else if (rowIndex + 1 >= 38 && rowIndex + 1 <= 55) duty += " Lunch Duty";
                 }
 
                 if (sheetId === "1BsGqMhxwTGWzycOJmiKgmkDRN2Sb6QOyODCpjiVUDVo") {
@@ -198,3 +201,4 @@
   </script>
 </body>
 </html>
+<!-- FULL CODE END -->
