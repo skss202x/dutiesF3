@@ -183,11 +183,6 @@
 
                 details = details.map(d => `🔎 ${d}`);
 
-                // ✅ NEW RULE: If duty contains "Latecomers", add "whole week" to details
-                if (typeof duty === 'string' && duty.toLowerCase().includes('latecomers')) {
-                  details.push("\ud83d\udd0e whole week");
-                }
-
                 if (extraDetails.length) details.push(...extraDetails);
 
                 const tr = document.createElement("tr");
